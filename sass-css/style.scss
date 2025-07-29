@@ -1,7 +1,7 @@
-
 @import "./variables.scss";
 
-:focus, .form-control:focus {
+:focus,
+.form-control:focus {
   border: none;
   box-shadow: none;
   outline: 5px solid $focus-outline;
@@ -9,35 +9,61 @@
   border-radius: 15px;
 }
 
+main * {
+  font-family: "Manrope", sans-serif;
+}
+
+#main {
+  background-color: $main-bg-color;
+}
 //..........header..............
 
 .custom-logo {
-// margin-top: 4rem;
-// margin-left: 5rem;
-height: 1.6rem;
-color: $light;
+  // margin-top: 4rem;
+  // margin-left: 5rem;
+  height: 1.6rem;
+  color: $light;
 }
 
 .custom-h1 {
   color: $yellow;
   font-family: "Anton", sans-serif;
-  font-weight: 400;
-  font-style: normal;
 }
 
-.custom-searchbar{
-    height: 6.2vh;
-    width: 65%;
-    background-color: $light;
-    border-radius: 10px;
-    // margin-top: 35vh;
+.custom-searchbar {
+  height: 6.2vh;
+  width: 65%;
+  background-color: $light;
+  border-radius: 10px;
+  // margin-top: 35vh;
 }
 
-.custom-input {
+.custom-input-header {
   font-family: "Manrope", sans-serif;
-  border: none; 
+  border: none;
   background-color: transparent;
 }
 
+//............filters...........
 
+.custom-container-filter {
+  width: 20%;
+  border-radius: 16px;
+}
+
+.custom-arrow {
+  height: 0.6rem;
+  width: 1.3rem;
+}
+
+.custom-input-filter {
+  border: 2px solid $lightGrey !important;
+  border-radius: 5px;
+  height: 3rem;
+}
+
+.custom-loop-light {
+  height: 2rem;
+  margin-bottom: 0.5rem;
+}
 

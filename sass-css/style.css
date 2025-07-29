@@ -1,8 +1,17 @@
-:focus, .form-control:focus {
+:focus,
+.form-control:focus {
   border: none;
   box-shadow: none;
   outline: 5px solid #ffd15b;
   border-radius: 15px;
+}
+
+main * {
+  font-family: "Manrope", sans-serif;
+}
+
+#main {
+  background-color: #EDEDED;
 }
 
 .custom-logo {
@@ -13,8 +22,6 @@
 .custom-h1 {
   color: #ffd15b;
   font-family: "Anton", sans-serif;
-  font-weight: 400;
-  font-style: normal;
 }
 
 .custom-searchbar {
@@ -24,8 +31,29 @@
   border-radius: 10px;
 }
 
-.custom-input {
+.custom-input-header {
   font-family: "Manrope", sans-serif;
   border: none;
   background-color: transparent;
+}
+
+.custom-container-filter {
+  width: 20%;
+  border-radius: 16px;
+}
+
+.custom-arrow {
+  height: 0.6rem;
+  width: 1.3rem;
+}
+
+.custom-input-filter {
+  border: 2px solid #C6C6C6 !important;
+  border-radius: 5px;
+  height: 3rem;
+}
+
+.custom-loop-light {
+  height: 2rem;
+  margin-bottom: 0.5rem;
 }/*# sourceMappingURL=style.css.map */
