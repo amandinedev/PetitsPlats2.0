@@ -6,6 +6,10 @@
   border-radius: 15px;
 }
 
+#search-icon-yellow:focus {
+  outline: 0px !important;
+}
+
 main * {
   font-family: "Manrope", sans-serif;
 }
