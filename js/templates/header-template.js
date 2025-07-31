@@ -1,18 +1,18 @@
 async function headerTemplate() {
   function getHeaderDOM() {
     const header = document.getElementById("header");
-    header.classList.add("container", "d-flex", "p-0");
+    header.classList.add("container-fluid", "d-flex", "p-0");
     header.innerHTML = `
-    <img class="header-img img-fluid position-relative w-100" src="./assets/images/header.jpg" alt="header-img">
-    <div class="container position-absolute d-flex flex-column">
-      <img class="custom-logo d-flex align-self-start w-25 mt-5 ms-2" src="./assets/images/logo.svg" alt="les petits plats">
-        <div class="container d-flex flex-column align-items-center mt-5">
-          <h1 class="custom-h1 text-center d-flex m-4 w-50 fs-1">
+    <img class="custom-header-img img-fluid position-relative w-100" src="./assets/images/header.jpg" alt="header-img">
+    <div class="custom-header-content container-fluid position-absolute d-flex flex-column top-0 start-0 p-0">
+      <img class="custom-logo d-flex align-self-start mt-5 ms-5" src="./assets/images/logo.svg" alt="les petits plats">
+        <div class="container d-flex flex-column align-items-center mt-5 mx-auto">
+          <h1 class="custom-h1 text-center d-flex mt-5 pt-5">
           CHERCHEZ PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN,SIMPLES ET DÉLICIEUSES</h1>
-          <searchbar class="custom-searchbar container-fluid d-flex flex-row">
+          <searchbar class="custom-searchbar container-fluid d-flex flex-row mt-2">
             <input type="text" class="form-control custom-input-header fs-6 ps-4 me-3" placeholder="Rechercher une recette, un ingrédient..." tabindex="0">
-            <img id="search-icon-dark" class="button d-flex h-75 end-0 me-1 my-auto" src="./assets/icons/icon-loop-dark.svg" role="button" aria-label="Rechercher une recette, un ingredient" tabindex="0" >
-            <img id="search-icon-yellow"class="button d-flex h-75 end-0 me-1 my-auto d-none" src="./assets/icons/icon-loop-yellow.svg" role="button" aria-label="Rechercher une recette, un ingredient" >
+            <img id="search-icon-dark" class="button d-flex h-75 end-0 me-1 my-auto" src="./assets/icons/icon-loop-dark.svg" role="button" alt"" aria-label="Rechercher une recette, un ingredient" tabindex="0" >
+            <img id="search-icon-yellow"class="button d-flex h-75 end-0 me-1 my-auto d-none" src="./assets/icons/icon-loop-yellow.svg" role="button" alt="" >
           </searchbar>
         </div>
     </div>

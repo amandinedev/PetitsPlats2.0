@@ -1,4 +1,4 @@
 *.css.map
 *.vscode
 style.scss
-variables.scss
+variables.css

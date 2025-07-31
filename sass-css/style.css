@@ -10,15 +10,25 @@
   outline: 0px !important;
 }
 
+#body {
+  background-color: #EDEDED;
+}
+
 main * {
   font-family: "Manrope", sans-serif;
 }
 
-#main {
-  background-color: #EDEDED;
+.custom-header-img {
+  height: 42rem;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 
-.custom-logo {
+.custom-header-content {
+  height: 100%;
+}
+
+.custom-header-content .custom-logo {
   height: 1.6rem;
   color: #FFFFFF;
 }
@@ -26,11 +36,15 @@ main * {
 .custom-h1 {
   color: #ffd15b;
   font-family: "Anton", sans-serif;
+  font-size: 2.75rem;
+  line-height: 5.5rem;
+  width: 55%;
 }
 
 .custom-searchbar {
   height: 6.2vh;
   width: 65%;
+  height: 4.5rem;
   background-color: #FFFFFF;
   border-radius: 10px;
 }
@@ -42,7 +56,6 @@ main * {
 }
 
 .custom-container-filter {
-  width: 20%;
   border-radius: 16px;
 }
 
@@ -60,4 +73,54 @@ main * {
 .custom-loop-light {
   height: 2rem;
   margin-bottom: 0.5rem;
+}
+
+.section-recipes {
+  height: 100vh;
+}
+
+.custom-container-recipe {
+  font-size: 0.88rem;
+  width: 23.75rem;
+  height: 45.7rem;
+  border-radius: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  box-shadow: 0px 4px 34px 30px rgba(0, 0, 0, 0.04);
+}
+
+.custom-container-recipe-img {
+  height: 34.5%;
+  width: 100%;
+}
+
+.custom-time {
+  background-color: #ffd15b;
+  border-radius: 16px;
+}
+
+.recipe-img {
+  height: 100%;
+  width: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.custom-h2 {
+  font-family: "Anton", sans-serif;
+}
+
+.custom-description {
+  height: 5.1rem;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.custom-h3 {
+  font-size: 0.75rem;
+  color: #7A7A7A;
+}
+
+.ingredient-quantity {
+  color: #7A7A7A;
 }/*# sourceMappingURL=style.css.map */

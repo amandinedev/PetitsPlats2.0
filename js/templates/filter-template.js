@@ -22,34 +22,57 @@ class FilterData {
 }
 
 // Utility function to remove accents from specific letters
-function transformAccents(str) {
-  return str.toLowerCase().replace(/[éèê]/g, "e");
+function formatAttribute(str) {
+  if (typeof str !== 'string' || !str) {
+        return '';
+    }
+
+  return str.toLowerCase().replace(/[àáâãäåèéêëìíîïòóôõöùúûüÿç]/g, function(char) {
+        switch (char) {
+            case 'à': case 'á': case 'â': case 'ã': case 'ä': case 'å':
+                return 'a';
+            case 'è': case 'é': case 'ê': case 'ë':
+                return 'e';
+            case 'ì': case 'í': case 'î': case 'ï':
+                return 'i';
+            case 'ò': case 'ó': case 'ô': case 'õ': case 'ö':
+                return 'o';
+            case 'ù': case 'ú': case 'û': case 'ü':
+                return 'u';
+            case 'ç':
+                return 'c';
+            default:
+                return char;
+        }
+    }).replace(/\s+/g, "-");
 }
 
 // Define the base filterTemplate class.
 class FilterTemplate {
   constructor() {
     this.filter = "";
-    this.attributeFilter = transformAccents(this.filter);
+    this.attributeFilter = formatAttribute(this.filter);
   }
 
   getFilterDOM() {
-    const div = document.createElement("div");
-    div.id = `filter-${this.attributeFilter}`;
-    div.classList.add(
+    const filter = document.createElement("div");
+    filter.id = `filter-${this.attributeFilter}`;
+    filter.classList.add(
       "custom-container-filter",
       "d-flex",
       "flex-column",
       "justify-content-start",
       "me-5",
       "bg-white",
-      "h-100"
+      "h-100",
+      "col-lg-2"
+      // "col-sm-12"
     );
-    div.innerHTML = `
+    filter.innerHTML = `
      <div id="filter-button-${this.attributeFilter}" class="container button d-flex flex-row justify-content-between w-100 py-4 px-4" role="button" aria-haspopup="listbox" aria-expanded="false" tabindex="0">
         <label class="fw-medium" for="${this.attributeFilter}">${this.filter}</label>
-        <img src="./assets/icons/icon-arrow-closed.svg" id="filter-closed-${this.attributeFilter}" class="custom-arrow mt-auto mb-auto"> 
-        <img src="./assets/icons/icon-arrow-opened.svg" id="filter-opened-${this.attributeFilter}" class="custom-arrow mt-auto mb-auto d-none"> 
+        <img src="./assets/icons/icon-arrow-closed.svg" id="filter-closed-${this.attributeFilter}" class="custom-arrow mt-auto mb-auto" alt=""> 
+        <img src="./assets/icons/icon-arrow-opened.svg" id="filter-opened-${this.attributeFilter}" class="custom-arrow mt-auto mb-auto d-none" alt=""> 
       </div>
       <div id="filter-options-${this.attributeFilter}" class="d-flex d-none w-100">
       <searchbar class="custom-searchbar position-relative d-flex w-100 h-100 mt-2 mb-2">
@@ -60,7 +83,7 @@ class FilterTemplate {
 
     `;
     //if input lenght >1 show icon close
-    return div;
+    return filter;
   }
 
   
@@ -104,7 +127,7 @@ class FilterMenuIngredients extends FilterTemplate {
   constructor() {
     super();
     this.filter = "Ingrédients";
-    this.attributeFilter = transformAccents(this.filter);
+    this.attributeFilter = formatAttribute(this.filter);
   }
 }
 
@@ -112,7 +135,7 @@ class FilterMenuAppliances extends FilterTemplate {
   constructor() {
     super();
     this.filter = "Appareils";
-    this.attributeFilter = transformAccents(this.filter);
+    this.attributeFilter = formatAttribute(this.filter);
   }
 }
 
@@ -120,7 +143,7 @@ class FilterMenuUstensils extends FilterTemplate {
   constructor() {
     super();
     this.filter = "Ustensiles";
-    this.attributeFilter = transformAccents(this.filter);
+    this.attributeFilter = formatAttribute(this.filter);
   }
 }
 
