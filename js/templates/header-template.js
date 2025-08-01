@@ -21,38 +21,37 @@ async function headerTemplate() {
     const searchIconYellow = document.getElementById("search-icon-yellow");
     const searchIconDark = document.getElementById("search-icon-dark");
 
-
     function handleHover() {
-      searchIconDark.classList.remove("d-none")
+      searchIconDark.classList.remove("d-none");
       searchIconDark.classList.add("d-none");
-      searchIconYellow.classList.remove("d-none")
+      searchIconYellow.classList.remove("d-none");
       searchIconYellow.classList.add("d-inline");
       searchIconYellow.setAttribute("tabindex", "0");
       searchIconYellow.focus();
-  }
+    }
 
     function handleLeave() {
       searchIconYellow.removeAttribute("tabindex");
       searchIconYellow.blur();
-      searchIconYellow.classList.remove("d-inline")
+      searchIconYellow.classList.remove("d-inline");
       searchIconYellow.classList.add("d-none");
-      searchIconDark.classList.remove("d-none")
+      searchIconDark.classList.remove("d-none");
       searchIconDark.classList.add("d-inline");
     }
 
-  //Add event listeners for click, mouseenter and keydown events
-    searchIconDark.addEventListener('focus', handleHover);
-    searchIconDark.addEventListener('mouseenter', handleHover);
+    //Add event listeners for click, mouseenter and keydown events
+    searchIconDark.addEventListener("focus", handleHover);
+    searchIconDark.addEventListener("mouseenter", handleHover);
 
-    searchIconYellow.addEventListener('blur', handleLeave);
-    searchIconYellow.addEventListener('mouseleave', handleLeave);
+    searchIconYellow.addEventListener("blur", handleLeave);
+    searchIconYellow.addEventListener("mouseleave", handleLeave);
 
-    searchIconYellow.addEventListener('click', () => {
+    searchIconYellow.addEventListener("click", () => {
       handleLeave();
     });
 
-    searchIconYellow.addEventListener('keydown', (event) => {
-     if (event.key === 'Enter' || event.key === ' ') {
+    searchIconYellow.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
         handleLeave();
       }
     });
@@ -60,4 +59,3 @@ async function headerTemplate() {
 
   getHeaderDOM();
 }
-

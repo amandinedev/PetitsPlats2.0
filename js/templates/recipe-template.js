@@ -8,10 +8,10 @@ class RecipeTemplate {
     this.name = recipes.name;
     this.attributeName = formatAttribute(this.name);
     this.description = recipes.description;
-    this.ingredients = recipes.ingredients.map(ingredient => ({
+    this.ingredients = recipes.ingredients.map((ingredient) => ({
       name: ingredient.ingredient,
       quantity: ingredient.quantity,
-      unit: ingredient.unit || ''
+      unit: ingredient.unit || "",
     }));
   }
 
@@ -26,16 +26,20 @@ class RecipeTemplate {
       "bg-white",
       "p-0",
       "col-lg-4",
-      "col-sx-12"  
+      "col-sx-12"
     );
     recipe.setAttribute("tabindex", "0");
 
-    const ingredientsHTML = this.ingredients.map(ingredient => `
+    const ingredientsHTML = this.ingredients
+      .map(
+        (ingredient) => `
       <li class="d-flex flex-column col-6 m-0 mb-3">
         <p class="ingredient-name m-0">${ingredient.name}</p>
         <p class="ingredient-quantity m-0">${ingredient.quantity}${ingredient.unit}</p>
       </li>
-    `).join('');
+    `
+      )
+      .join("");
 
     recipe.innerHTML = `
      <div id="${this.attributeName}-image" class="custom-container-recipe-img container d-flex m-0 p-0 w-100 position-relative" >
@@ -54,5 +58,5 @@ class RecipeTemplate {
 
     `;
     return recipe;
-}
+  }
 }

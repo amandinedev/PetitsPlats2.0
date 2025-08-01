@@ -21,12 +21,15 @@ async function displayData() {
     "section-filters",
     "container-fluid",
     "d-flex",
-    "flex-xs-column",
-    "flex-lg-row",
-    "justify-content-start",
+    "flex-column",
+    "flex-md-row",
+    "justify-content-center",
+    "justify-content-lg-start",
+    "gap-3",
+    "gap-lg-0",
+    // "md-row-gap-2",
     "h-100",
-    "mx-sm-5",
-    "mx-lg-auto",
+    "mx-auto"
   );
   const filterMenuIngredients = new FilterMenuIngredients();
   const filterMenuAppliances = new FilterMenuAppliances();
@@ -98,10 +101,10 @@ async function displayData() {
     "container-fluid",
     "d-flex",
     "flex-wrap",
+    "justify-content-center",
     "lg-justify-content-start",
     "gap-5",
     "mt-5",
-    "sm-justify-content-center",
     "mx-auto"
   );
 

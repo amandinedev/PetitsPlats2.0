@@ -5,15 +5,15 @@
   border: none;
   box-shadow: none;
   outline: 5px solid $focus-outline;
-  border-radius: 15px;
+  border-radius: 16px;
 }
 
-#search-icon-yellow:focus{
+#search-icon-yellow:focus {
   outline: 0px !important;
 }
 
 #body {
-   background-color: $main-bg-color;
+  background-color: $main-bg-color;
 }
 
 main * {
@@ -27,14 +27,11 @@ main * {
   object-fit: cover;
 }
 
-.custom-header-content{
-  height: 100%;
+.custom-header-content {
+  height: 42rem;
 }
 
-.custom-header-content
-.custom-logo {
-  // margin-top: 4rem;
-  // margin-left: 5rem;
+.custom-header-content .custom-logo {
   height: 1.6rem;
   color: $light;
 }
@@ -61,10 +58,30 @@ main * {
   background-color: transparent;
 }
 
+@media (max-width: 600px) {
+  .custom-h1 {
+    font-size: 2rem;
+    line-height: 4rem;
+    width: 90%;
+  }
+  .custom-input-header::placeholder {
+    overflow-x: auto;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1280px) {
+  .custom-h1 {
+    font-size: 2.45rem;
+    line-height: 4.9rem;
+    width: 90%;
+  }
+}
+
 //............filters...........
 
 .custom-container-filter {
-  // width: 11.75rem;
+  width: 11.75rem;
   border-radius: 16px;
 }
 
@@ -86,11 +103,11 @@ main * {
 
 //recipes
 
-.section-recipes{
+.section-recipes {
   height: 100vh;
 }
 
-.custom-container-recipe{
+.custom-container-recipe {
   font-size: 0.88rem;
   // width: 30.8%;
   width: 23.75rem;
@@ -102,36 +119,36 @@ main * {
 }
 
 .custom-container-recipe-img {
-height: 34.5%;
-width: 100%;
+  height: 34.5%;
+  width: 100%;
 }
 
-.custom-time{
+.custom-time {
   background-color: $yellow;
   border-radius: 16px;
 }
 
-.recipe-img{
-  height:100%;
+.recipe-img {
+  height: 100%;
   width: 100%;
   object-fit: cover;
 }
 
-.custom-h2{
+.custom-h2 {
   font-family: "Anton", sans-serif;
 }
 
-.custom-description{
-height: 5.1rem;
-word-wrap: break-word;
-white-space: normal;
+.custom-description {
+  height: 5.1rem;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
-.custom-h3{
+.custom-h3 {
   font-size: 0.75rem;
   color: $grey;
 }
 
-.ingredient-quantity{
+.ingredient-quantity {
   color: $grey;
 }

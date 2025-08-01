@@ -3,7 +3,7 @@
   border: none;
   box-shadow: none;
   outline: 5px solid #ffd15b;
-  border-radius: 15px;
+  border-radius: 16px;
 }
 
 #search-icon-yellow:focus {
@@ -25,7 +25,7 @@ main * {
 }
 
 .custom-header-content {
-  height: 100%;
+  height: 42rem;
 }
 
 .custom-header-content .custom-logo {
@@ -55,7 +55,30 @@ main * {
   background-color: transparent;
 }
 
+@media (max-width: 600px) {
+  .custom-h1 {
+    font-size: 2rem;
+    line-height: 4rem;
+    width: 90%;
+  }
+  .custom-input-header::-moz-placeholder {
+    overflow-x: auto;
+    text-overflow: ellipsis;
+  }
+  .custom-input-header::placeholder {
+    overflow-x: auto;
+    text-overflow: ellipsis;
+  }
+}
+@media (min-width: 601px) and (max-width: 1280px) {
+  .custom-h1 {
+    font-size: 2.45rem;
+    line-height: 4.9rem;
+    width: 90%;
+  }
+}
 .custom-container-filter {
+  width: 11.75rem;
   border-radius: 16px;
 }
 
