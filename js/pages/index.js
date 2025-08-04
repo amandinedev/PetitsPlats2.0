@@ -35,18 +35,25 @@ async function displayData() {
   const filterMenuAppliances = new FilterMenuAppliances();
   const filterMenuUstensils = new FilterMenuUstensils();
 
+const filterData = new FilterData(recipes);
+
   const filters = [
     {
       filter: filterMenuIngredients,
       attributeFilter: filterMenuIngredients.attributeFilter,
+      filterType: filterMenuIngredients.filterType,
+
     },
     {
       filter: filterMenuAppliances,
       attributeFilter: filterMenuAppliances.attributeFilter,
+      filterType: filterMenuAppliances.filterType,
+
     },
     {
       filter: filterMenuUstensils,
       attributeFilter: filterMenuUstensils.attributeFilter,
+      filterType: filterMenuUstensils.filterType,
     },
   ];
 
@@ -112,7 +119,13 @@ async function displayData() {
     const recipe = new RecipeTemplate(recipeData);
     sectionRecipes.appendChild(recipe.getRecipesDOM());
   });
+
+  
+  //total recipes DOM
+
+  totalRecipesTemplate();
 }
+
 
 async function init() {
   try {

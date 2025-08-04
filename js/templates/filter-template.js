@@ -21,15 +21,21 @@ class FilterData {
   }
 }
 
-// Utility function to remove accents from specific letters
+// Utility function to remove accents from specific letters and switch to lower case
 function formatAttribute(str) {
+  let formattedStr = formatType(str).toLowerCase();
+  return formattedStr;
+}
+
+function formatType(str) {
   if (typeof str !== "string" || !str) {
     return "";
   }
 
-  return str
-    .toLowerCase()
-    .replace(/[àáâãäåèéêëìíîïòóôõöùúûüÿç]/g, function (char) {
+  // Remove accents
+  let formattedStr = str.replace(
+    /[àáâãäåèéêëìíîïòóôõöùúûüÿç]/g,
+    function (char) {
       switch (char) {
         case "à":
         case "á":
@@ -64,15 +70,23 @@ function formatAttribute(str) {
         default:
           return char;
       }
-    })
-    .replace(/\s+/g, "-");
+    }
+  );
+  // Replace spaces with dashes
+  formattedStr = formattedStr.replace(/\s+/g, "-");
+  // capitalize the first letter
+  if (formattedStr.length > 0) {
+    formattedStr = formattedStr.charAt(0).toUpperCase() + formattedStr.slice(1);
+  }
+  return formattedStr;
 }
 
 // Define the base filterTemplate class.
 class FilterTemplate {
-  constructor() {
+  constructor(filter) {
     this.filter = "";
     this.attributeFilter = formatAttribute(this.filter);
+    this.filterType = "";
   }
 
   getFilterDOM() {
@@ -90,21 +104,78 @@ class FilterTemplate {
       "h-100"
     );
     filter.innerHTML = `
-     <div id="filter-button-${this.attributeFilter}" class="container button d-flex flex-row justify-content-between w-100 py-4 px-4" role="button" aria-haspopup="listbox" aria-expanded="false" tabindex="0">
-        <label class="fw-medium" for="${this.attributeFilter}">${this.filter}</label>
-        <img src="./assets/icons/icon-arrow-closed.svg" id="filter-closed-${this.attributeFilter}" class="custom-arrow mt-auto mb-auto" alt=""> 
-        <img src="./assets/icons/icon-arrow-opened.svg" id="filter-opened-${this.attributeFilter}" class="custom-arrow mt-auto mb-auto d-none" alt=""> 
+     <div id="filter-button-${
+       this.attributeFilter
+     }" class="container button d-flex flex-row justify-content-between w-100 py-4 px-4" role="button" aria-haspopup="listbox" aria-expanded="false" tabindex="0">
+        <label class="fw-medium" for="${this.attributeFilter}">${
+      this.filter
+    }</label>
+        <img src="./assets/icons/icon-arrow-closed.svg" id="filter-closed-${
+          this.attributeFilter
+        }" class="custom-arrow mt-auto mb-auto" alt=""> 
+        <img src="./assets/icons/icon-arrow-opened.svg" id="filter-opened-${
+          this.attributeFilter
+        }" class="custom-arrow mt-auto mb-auto d-none" alt=""> 
       </div>
-      <div id="filter-options-${this.attributeFilter}" class="d-flex d-none w-100">
+      <div id="filter-options-${
+        this.attributeFilter
+      }" class="d-flex flex-column d-none w-100">
       <searchbar class="custom-searchbar position-relative d-flex w-100 h-100 mt-2 mb-2">
-        <input id="${this.attributeFilter}" class="custom-input-filter w-100 mt-2 mx-3" type="text"></input>
+        <input id="${
+          this.attributeFilter
+        }-input" class="custom-input-filter w-100 mt-2 mx-3" type="text"></input>
         <img src="./assets/icons/icon-loop-light.svg" class="custom-loop-light button position-absolute end-0 bottom-0 p-1 me-4" alt="rechercher" role="button" tabindex="0">
       </searchbar>
+      <div class="custom-filter-list">
+      <ul class="${this.attributeFilter}-list list-unstyled d-flex flex-column">
+            ${this.generateListHTML()}
+      </ul>
       </div>
+      </div> 
 
     `;
+
+    // Add event listener to the input field
+    const inputElement = document.getElementById(
+      `${this.attributeFilter}-input`
+    );
+    if (inputElement) {
+      inputElement.addEventListener("input", () =>
+        this.updateList(inputElement, this.filterType, this.attributeFilter)
+      );
+    }
+
     //if input lenght >1 show icon close
     return filter;
+  }
+
+  generateListHTML() {
+    const methodName = `get${this.filterType}List`;
+    const listItems = filterData[methodName]()
+      .map(
+        (item) =>
+          `<li class="list-item button mt-2 mx-3" role="option" tabindex="0">${item}</li>`
+      )
+      .join("");
+    console.log(listItems);
+    return listItems;
+  }
+
+  updateList(inputElement, methodName, attributeFilter) {
+    const value = formatAttribute(inputElement.value);
+    if (value.length >= 3) {
+      const updatedHTML = filterData[methodName]()
+        .filter((item) => item.formatAttribute().includes(value))
+        .map((item) => `<li class="list-group-item" role="option">${item}</li>`)
+        .join("");
+
+      const listElement = document.querySelector(`.${attributeFilter}-list`);
+      if (listElement) {
+        listElement.innerHTML = updatedHTML;
+      }
+    } else {
+      this.generateListHTML();
+    }
   }
 
   handleFilterButtonEvent(
@@ -150,6 +221,7 @@ class FilterMenuIngredients extends FilterTemplate {
     super();
     this.filter = "Ingrédients";
     this.attributeFilter = formatAttribute(this.filter);
+    this.filterType = "Ingredient";
   }
 }
 
@@ -158,6 +230,7 @@ class FilterMenuAppliances extends FilterTemplate {
     super();
     this.filter = "Appareils";
     this.attributeFilter = formatAttribute(this.filter);
+    this.filterType = "Appliance";
   }
 }
 
@@ -166,6 +239,7 @@ class FilterMenuUstensils extends FilterTemplate {
     super();
     this.filter = "Ustensiles";
     this.attributeFilter = formatAttribute(this.filter);
+    this.filterType = "Ustensil";
   }
 }
 

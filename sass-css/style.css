@@ -74,7 +74,7 @@ main * {
   .custom-h1 {
     font-size: 2.45rem;
     line-height: 4.9rem;
-    width: 90%;
+    width: 55%;
   }
 }
 .custom-container-filter {
@@ -98,6 +98,22 @@ main * {
   margin-bottom: 0.5rem;
 }
 
+.custom-filter-list {
+  height: 22.5rem;
+  overflow: scroll;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .total-recipes {
+    position: relative !important;
+  }
+}
+@media (min-width: 769px) and (max-width: 900px) {
+  .total-recipes {
+    margin-top: 4rem;
+  }
+}
 .section-recipes {
   height: 100vh;
 }
