@@ -15,6 +15,7 @@ async function displayData() {
     "py-3",
     "h-100"
   );
+  //create section filters
   const sectionFilters = document.createElement("section");
   main.appendChild(sectionFilters);
   sectionFilters.classList.add(
@@ -27,10 +28,23 @@ async function displayData() {
     "justify-content-lg-start",
     "gap-3",
     "gap-lg-0",
-    // "md-row-gap-2",
     "h-100",
     "mx-auto"
   );
+
+//create section selected filters
+  const sectionSelectedFilters = document.createElement("section");
+  main.appendChild(sectionSelectedFilters);
+  sectionSelectedFilters.classList.add(
+    "section-selected-filters",
+    "container-fluid",
+    "d-flex",
+    "justify-content-start",
+    "gap-3",
+    "mt-5",
+    "mx-auto"
+  );
+
   const filterMenuIngredients = new FilterMenuIngredients();
   const filterMenuAppliances = new FilterMenuAppliances();
   const filterMenuUstensils = new FilterMenuUstensils();
@@ -57,11 +71,35 @@ const filterData = new FilterData(recipes);
     },
   ];
 
-  filters.forEach(({ filter }) => {
+
+  filters.forEach(({ filter, filterType, attributeFilter }) => {
     sectionFilters.appendChild(filter.getFilterDOM());
+     // Add event listener to the filter list to select an option
+    filter.handleFilterListEvent();
+    // Add event listener to the filter list to remove an option
+    filter.handleFilterSelectedListEvent();
+    // filter.updateSelectedFilters(sectionSelectedFilters);
+
+ // Check if an inputElement exists and add event listener accordingly to update list
+    const inputElement = document.getElementById(
+      `${attributeFilter}-input`
+    );
+    if (inputElement) {
+    inputElement.addEventListener("input", () => {
+        const value = formatAttribute(inputElement.value);
+        console.log(value);
+        filter.generateUpdatedListHTML(attributeFilter, value);
+        //re-attach event listeners
+        filter.handleFilterListEvent();
+        filter.handleFilterSelectedListEvent();
+        // filter.updateSelectedFilters(sectionSelectedFilters);
+    });
+    } else {
+    console.log(`No input element found for attribute: ${attributeFilter}`);
+    }
   });
 
-  // Event listeners
+  // Add event listener to the filter buttons
   const filterTemplateInstance = new FilterTemplate();
 
   filters.forEach(({ attributeFilter }) => {
@@ -120,7 +158,6 @@ const filterData = new FilterData(recipes);
     sectionRecipes.appendChild(recipe.getRecipesDOM());
   });
 
-  
   //total recipes DOM
 
   totalRecipesTemplate();

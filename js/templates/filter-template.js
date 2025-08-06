@@ -23,11 +23,11 @@ class FilterData {
 
 // Utility function to remove accents from specific letters and switch to lower case
 function formatAttribute(str) {
-  let formattedStr = formatType(str).toLowerCase();
+  let formattedStr = formatAccents(str).toLowerCase();
   return formattedStr;
 }
 
-function formatType(str) {
+function formatAccents(str) {
   if (typeof str !== "string" || !str) {
     return "";
   }
@@ -74,10 +74,6 @@ function formatType(str) {
   );
   // Replace spaces with dashes
   formattedStr = formattedStr.replace(/\s+/g, "-");
-  // capitalize the first letter
-  if (formattedStr.length > 0) {
-    formattedStr = formattedStr.charAt(0).toUpperCase() + formattedStr.slice(1);
-  }
   return formattedStr;
 }
 
@@ -127,52 +123,69 @@ class FilterTemplate {
         <img src="./assets/icons/icon-loop-light.svg" class="custom-loop-light button position-absolute end-0 bottom-0 p-1 me-4" alt="rechercher" role="button" tabindex="0">
       </searchbar>
       <div class="custom-filter-list">
-      <ul class="${this.attributeFilter}-list list-unstyled d-flex flex-column">
+        <ul id="selected-items-${
+          this.attributeFilter
+        }" class="bg-yellow list-unstyled d-flex flex-column gap-2 my-2 px-3"></ul> 
+        <ul class="${
+          this.attributeFilter
+        }-list list-unstyled d-flex flex-column my-2">
             ${this.generateListHTML()}
-      </ul>
+        </ul>
       </div>
       </div> 
 
     `;
 
-    // Add event listener to the input field
-    const inputElement = document.getElementById(
-      `${this.attributeFilter}-input`
-    );
-    if (inputElement) {
-      inputElement.addEventListener("input", () =>
-        this.updateList(inputElement, this.filterType, this.attributeFilter)
-      );
-    }
-
     //if input lenght >1 show icon close
     return filter;
   }
 
-  generateListHTML() {
+  generateListItems() {
     const methodName = `get${this.filterType}List`;
-    const listItems = filterData[methodName]()
+    //format items
+    const sortedItems = filterData[methodName]()
+      .map(
+        (item) =>
+          item.trim(0).charAt(0).toUpperCase() + item.slice(1).toLowerCase()
+      )
+      .sort()
+      // keeps only the first occurrence of each item in the array to avoid tag repetition
+      .filter((value, index, array) => array.indexOf(value) === index);
+    return sortedItems;
+  }
+
+  generateListHTML() {
+    const listItems = this.generateListItems()
       .map(
         (item) =>
           `<li class="list-item button mt-2 mx-3" role="option" tabindex="0">${item}</li>`
       )
       .join("");
-    console.log(listItems);
     return listItems;
   }
 
-  updateList(inputElement, methodName, attributeFilter) {
-    const value = formatAttribute(inputElement.value);
+  updateListItems(value) {
+    const sortedItems = this.generateListItems();
+    let filteredItems = sortedItems; // Initialize with all items
     if (value.length >= 3) {
-      const updatedHTML = filterData[methodName]()
-        .filter((item) => item.formatAttribute().includes(value))
-        .map((item) => `<li class="list-group-item" role="option">${item}</li>`)
-        .join("");
+      filteredItems = sortedItems.filter((item) =>
+        formatAttribute(item).includes(value)
+      );
+    }
+    return filteredItems;
+  }
 
-      const listElement = document.querySelector(`.${attributeFilter}-list`);
-      if (listElement) {
-        listElement.innerHTML = updatedHTML;
-      }
+  generateUpdatedListHTML(attributeFilter, value) {
+    const updatedHTML = this.updateListItems(value)
+      .map(
+        (item) =>
+          `<li class="list-item button mt-2 mx-3" role="option" tabindex="0">${item}</li>`
+      )
+      .join("");
+
+    const listElement = document.querySelector(`.${attributeFilter}-list`);
+    if (listElement) {
+      listElement.innerHTML = updatedHTML;
     } else {
       this.generateListHTML();
     }
@@ -212,6 +225,204 @@ class FilterTemplate {
       filterOpenedImgElement.classList.remove("d-none");
       filterOpenedImgElement.classList.add("d-inline");
       filterClosedImgElement.classList.add("d-none");
+    }
+  }
+
+  handleFilterListEvent() {
+    const listItems = document.querySelectorAll(
+      `.${this.attributeFilter}-list .list-item`
+    );
+    listItems.forEach((item) => {
+      item.addEventListener("click", () => {
+        if (!this.isItemAlreadySelected(item.textContent)) {
+          this.createSelectedItemDOM(item.textContent);
+        }
+      });
+      item.addEventListener("keydown", (event) => {
+        if (
+          (event.key === "Enter" || event.key === " ") &&
+          !this.isItemAlreadySelected(item.textContent)
+        ) {
+          this.createSelectedItemDOM(item.textContent);
+        }
+      });
+    });
+  }
+
+  //check if an item is already selected
+  isItemAlreadySelected(text) {
+    const selectedItemsContainer = document.getElementById(
+      `selected-items-${this.attributeFilter}`
+    );
+    if (selectedItemsContainer) {
+      const selectedItems = Array.from(selectedItemsContainer.children); // Convert NodeList to array
+      return selectedItems.some((item) => item.textContent.trim() === text);
+    }
+    return false;
+  }
+
+  handleFilterSelectedListEvent() {
+  const selectedItemsContainer = document.getElementById(
+    `selected-items-${this.attributeFilter}`
+  );
+  const sectionSelectedFilters = document.querySelector(
+    ".section-selected-filters"
+  );
+
+  // Ensure both containers are defined to avoid null errors
+  if (!selectedItemsContainer && !sectionSelectedFilters) return;
+
+  // Add event listeners to both containers
+  [selectedItemsContainer, sectionSelectedFilters].forEach(container => {
+    if (container) {
+      container.addEventListener("click", (event) => {
+      this.handleCloseButtonClick(event);
+      });
+      container.addEventListener("keydown", (event) => {
+      this.handleKeyDown(event);
+      });
+    }
+  });
+}
+
+  handleCloseButtonClick(event) {
+    const target = event.target;
+    if (
+      target.classList.contains("close-button") ||
+      target.closest(".close-button")
+    ) {
+      const selectedItem = target.closest(".selected-item");
+      if (selectedItem) {
+        this.handleRemoveSelectedItem(selectedItem);
+        this.closeMatchingItem(selectedItem);
+      }
+    }
+  }
+
+  handleKeyDown(event) {
+    const target = event.target;
+    if (
+      ((event.key === "Enter" || event.key === "Space") &&
+        target.classList.contains("close-button")) ||
+      target.closest(".close-button")
+    ) {
+      const selectedItem = target.closest(".selected-item");
+      if (selectedItem) {
+        this.handleRemoveSelectedItem(selectedItem);
+        this.closeMatchingItem(selectedItem);
+      }
+    }
+  }
+
+  closeMatchingItem(selectedItem) {
+    // Extract the inner text of the span within the .selected-item
+    const itemText = selectedItem.querySelector("span").innerText;
+    const selectedItemsContainer = document.getElementById(
+    `selected-items-${this.attributeFilter}`
+  );
+  const sectionSelectedFilters = document.querySelector(
+    ".section-selected-filters"
+  );
+    [selectedItemsContainer, sectionSelectedFilters].forEach(container => {
+      if (container) {
+        // Get all span elements within .selected-item
+      const spans = container.querySelectorAll('.selected-item span');
+
+      // Find the matching item based on text content
+      let matchingItem = null;
+      spans.forEach(span => {
+        if (span.innerText === itemText) {
+          matchingItem = span.closest(".selected-item");
+        }
+      });
+
+      // Handle the removal of the selected item, if found
+      if (matchingItem) {
+        this.handleRemoveSelectedItem(matchingItem);
+      }
+    }
+  });
+}
+  
+  handleRemoveSelectedItem(selectedItem) {
+    if (selectedItem) {
+      selectedItem.remove();
+    }
+  }
+
+  createSelectedItemDOM(text) {
+    const selectedItemsContainer = document.getElementById(
+      `selected-items-${this.attributeFilter}`
+    );
+    if (selectedItemsContainer) {
+      const selectedItemList = document.createElement("li");
+      selectedItemList.classList.add(
+        "selected-item",
+        "d-flex",
+        "flex-row",
+        "align-items-center",
+        "justify-content-between",
+        "bg-yellow",
+        "py-1"
+      );
+      selectedItemList.innerHTML = `
+      <span>${text}</span>
+      <button class="close-button btn px-2 w-25" aria-label="Close">
+      <img src="./assets/icons/icon-close-filter-selected-item.svg" class="close-icon" alt="close-icon" ></img>
+      </button>
+    `;
+
+      const button = selectedItemList.querySelector("button");
+      const span = selectedItemList.querySelector("span");
+
+      // Add event listeners for focus and blur
+      button.addEventListener("focus" || "hover", () => {
+        span.classList.add("fw-bold");
+      });
+
+      button.addEventListener("blur", () => {
+        span.classList.remove("fw-bold");
+      });
+
+      selectedItemsContainer.appendChild(selectedItemList);
+
+      // Append the selected item to sectionSelectedFilters if provided
+      const sectionSelectedFilters = document.querySelector(
+        ".section-selected-filters"
+      );
+      if (sectionSelectedFilters) {
+        const selectedFilterDOM = document.createElement("div");
+        selectedFilterDOM.classList.add(
+          "custom-selected-filter",
+          "selected-item",
+          "d-flex",
+          "flex-row",
+          "align-items-center",
+          "justify-content-between",
+          "bg-yellow",
+          "w-auto",
+          "p-2"
+        );
+        selectedFilterDOM.innerHTML = `
+          <span class="px-2">${text}</span>
+          <button class="close-button btn px-2 py-1" aria-label="Close">
+            <img src="./assets/icons/icon-close-filter-selected.svg" class="close-icon" alt="close-icon" ></img>
+          </button>
+        `;
+
+        const buttonSelected = selectedFilterDOM.querySelector("button");
+        const spanSelected = selectedFilterDOM.querySelector("span");
+
+        // Add event listeners for focus and blur
+        buttonSelected.addEventListener("focus" || "hover", () => {
+          spanSelected.classList.add("fw-bold");
+        });
+
+        buttonSelected.addEventListener("blur", () => {
+          spanSelected.classList.remove("fw-bold");
+        });
+        sectionSelectedFilters.appendChild(selectedFilterDOM);
+      }
     }
   }
 }

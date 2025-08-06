@@ -99,9 +99,18 @@ main * {
 }
 
 .custom-filter-list {
-  height: 22.5rem;
+  height: auto;
+  max-height: 11.5rem;
   overflow: scroll;
   font-size: 0.875rem;
+}
+
+.bg-yellow {
+  background-color: #ffd15b;
+}
+
+.custom-selected-filter {
+  border-radius: 16px;
 }
 
 @media (max-width: 768px) {
