@@ -60,3 +60,67 @@ class RecipeTemplate {
     return recipe;
   }
 }
+
+
+function updateRecipesDOM(recipes, sectionRecipes, selectedItems) {
+  console.log("Updating Recipes with:", selectedItems);
+  // Clear existing recipes in the DOM
+  while (sectionRecipes.firstChild) {
+    sectionRecipes.removeChild(sectionRecipes.firstChild);
+  }
+
+  // Filter recipes based on the selected items
+  const filteredRecipes = filterRecipesBySelectedItems(recipes, selectedItems);
+  console.log(filteredRecipes);
+
+  // Display filtered recipes in the DOM
+  filteredRecipes.forEach((recipeData) => {
+    const recipe = new RecipeTemplate(recipeData);
+    sectionRecipes.appendChild(recipe.getRecipesDOM());
+  });
+}
+
+function filterRecipesBySelectedItems(recipes, selectedItems) {
+  const formattedSelectedItems = selectedItems.map(formatAttribute);
+
+  return formattedSelectedItems.reduce((recipes, selectedItem) => {
+    return recipes.filter((recipe) => {
+      for (let key in recipe) {
+        if (key === "ingredients") {
+          for (let ingredient of recipe[key]) {
+            let ingredientName = formatAttribute(ingredient.ingredient);
+            // Check if the ingredient name is the same or contains the selected item
+            if (
+              ingredientName === selectedItem ||
+              ingredientName.includes(selectedItem)
+            ) {
+              return true;
+            }
+          }
+        } else if (Array.isArray(recipe[key])) {
+          for (let item of recipe[key]) {
+            let formattedItem = formatAttribute(item);
+            // Check if the item is the same or contains the selected item
+            if (
+              typeof item === "string" &&
+              (formattedItem === selectedItem ||
+                formattedItem.includes(selectedItem))
+            ) {
+              return true;
+            }
+          }
+        } else if (typeof recipe[key] === "string") {
+          let formattedString = formatAttribute(recipe[key]);
+          // Check if the string is the same or contains the selected item
+          if (
+            formattedString === selectedItem ||
+            formattedString.includes(selectedItem)
+          ) {
+            return true;
+          }
+        }
+      }
+      return false;
+    });
+  }, recipes);
+}

@@ -32,7 +32,7 @@ async function displayData() {
     "mx-auto"
   );
 
-//create section selected filters
+  //create section selected filters
   const sectionSelectedFilters = document.createElement("section");
   main.appendChild(sectionSelectedFilters);
   sectionSelectedFilters.classList.add(
@@ -49,20 +49,18 @@ async function displayData() {
   const filterMenuAppliances = new FilterMenuAppliances();
   const filterMenuUstensils = new FilterMenuUstensils();
 
-const filterData = new FilterData(recipes);
+  const filterData = new FilterData(recipes);
 
   const filters = [
     {
       filter: filterMenuIngredients,
       attributeFilter: filterMenuIngredients.attributeFilter,
       filterType: filterMenuIngredients.filterType,
-
     },
     {
       filter: filterMenuAppliances,
       attributeFilter: filterMenuAppliances.attributeFilter,
       filterType: filterMenuAppliances.filterType,
-
     },
     {
       filter: filterMenuUstensils,
@@ -71,21 +69,18 @@ const filterData = new FilterData(recipes);
     },
   ];
 
-
   filters.forEach(({ filter, filterType, attributeFilter }) => {
     sectionFilters.appendChild(filter.getFilterDOM());
-     // Add event listener to the filter list to select an option
+    // Add event listener to the filter list to select an option
     filter.handleFilterListEvent();
     // Add event listener to the filter list to remove an option
     filter.handleFilterSelectedListEvent();
     // filter.updateSelectedFilters(sectionSelectedFilters);
 
- // Check if an inputElement exists and add event listener accordingly to update list
-    const inputElement = document.getElementById(
-      `${attributeFilter}-input`
-    );
+    // Check if an inputElement exists and add event listener accordingly to update list
+    const inputElement = document.getElementById(`${attributeFilter}-input`);
     if (inputElement) {
-    inputElement.addEventListener("input", () => {
+      inputElement.addEventListener("input", () => {
         const value = formatAttribute(inputElement.value);
         console.log(value);
         filter.generateUpdatedListHTML(attributeFilter, value);
@@ -93,9 +88,9 @@ const filterData = new FilterData(recipes);
         filter.handleFilterListEvent();
         filter.handleFilterSelectedListEvent();
         // filter.updateSelectedFilters(sectionSelectedFilters);
-    });
+      });
     } else {
-    console.log(`No input element found for attribute: ${attributeFilter}`);
+      console.log(`No input element found for attribute: ${attributeFilter}`);
     }
   });
 
@@ -159,10 +154,8 @@ const filterData = new FilterData(recipes);
   });
 
   //total recipes DOM
-
   totalRecipesTemplate();
 }
-
 
 async function init() {
   try {

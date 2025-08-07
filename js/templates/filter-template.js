@@ -83,6 +83,7 @@ class FilterTemplate {
     this.filter = "";
     this.attributeFilter = formatAttribute(this.filter);
     this.filterType = "";
+    this.selectedItems = [];
   }
 
   getFilterDOM() {
@@ -149,8 +150,12 @@ class FilterTemplate {
           item.trim(0).charAt(0).toUpperCase() + item.slice(1).toLowerCase()
       )
       .sort()
-      // keeps only the first occurrence of each item in the array to avoid tag repetition
-      .filter((value, index, array) => array.indexOf(value) === index);
+      // keeps only the first occurrence of each item in the array to avoid tag repetition and remove plurals
+      .filter(
+        (value, index, self) =>
+          index ===
+          self.findIndex((t) => t.replace(/s$/, "") === value.replace(/s$/, ""))
+      );
     return sortedItems;
   }
 
@@ -232,21 +237,49 @@ class FilterTemplate {
     const listItems = document.querySelectorAll(
       `.${this.attributeFilter}-list .list-item`
     );
+
     listItems.forEach((item) => {
       item.addEventListener("click", () => {
+        const sectionRecipes = document.querySelector(".section-recipes");
         if (!this.isItemAlreadySelected(item.textContent)) {
           this.createSelectedItemDOM(item.textContent);
+          this.getSelectedItems();
+          updateRecipesDOM(recipes, sectionRecipes, this.selectedItems);
         }
       });
       item.addEventListener("keydown", (event) => {
+        const sectionRecipes = document.querySelector(".section-recipes");
         if (
           (event.key === "Enter" || event.key === " ") &&
           !this.isItemAlreadySelected(item.textContent)
         ) {
           this.createSelectedItemDOM(item.textContent);
+          this.getSelectedItems();
+          updateRecipesDOM(recipes, sectionRecipes, this.selectedItems);
         }
       });
     });
+  }
+
+  getSelectedItems() {
+    const selectedItemsContainer = document.querySelector(
+      ".section-selected-filters"
+    );
+    if (selectedItemsContainer) {
+      // Check if there are any .selected-item elements within the container
+      const hasSelectedItem =
+        selectedItemsContainer.querySelector(".selected-item") !== null;
+      if (hasSelectedItem) {
+        this.selectedItems = Array.from(
+          selectedItemsContainer.querySelectorAll("span")
+        ).map((span) => span.innerText);
+      } else {
+        // set to empty filters
+        this.selectedItems = [];
+      }
+    }
+    console.log(this.selectedItems);
+    return this.selectedItems;
   }
 
   //check if an item is already selected
@@ -262,28 +295,34 @@ class FilterTemplate {
   }
 
   handleFilterSelectedListEvent() {
-  const selectedItemsContainer = document.getElementById(
-    `selected-items-${this.attributeFilter}`
-  );
-  const sectionSelectedFilters = document.querySelector(
-    ".section-selected-filters"
-  );
+    const selectedItemsContainer = document.getElementById(
+      `selected-items-${this.attributeFilter}`
+    );
+    const sectionSelectedFilters = document.querySelector(
+      ".section-selected-filters"
+    );
 
-  // Ensure both containers are defined to avoid null errors
-  if (!selectedItemsContainer && !sectionSelectedFilters) return;
+    // Ensure both containers are defined to avoid null errors
+    if (!selectedItemsContainer && !sectionSelectedFilters) return;
 
-  // Add event listeners to both containers
-  [selectedItemsContainer, sectionSelectedFilters].forEach(container => {
-    if (container) {
-      container.addEventListener("click", (event) => {
-      this.handleCloseButtonClick(event);
-      });
-      container.addEventListener("keydown", (event) => {
-      this.handleKeyDown(event);
-      });
-    }
-  });
-}
+    // Add event listeners to both containers
+    [selectedItemsContainer, sectionSelectedFilters].forEach((container) => {
+      if (container) {
+        container.addEventListener("click", (event) => {
+          const sectionRecipes = document.querySelector(".section-recipes");
+          this.handleCloseButtonClick(event);
+          this.getSelectedItems();
+          updateRecipesDOM(recipes, sectionRecipes, this.selectedItems);
+        });
+        container.addEventListener("keydown", (event) => {
+          const sectionRecipes = document.querySelector(".section-recipes");
+          this.handleKeyDown(event);
+          this.getSelectedItems();
+          updateRecipesDOM(recipes, sectionRecipes, this.selectedItems);
+        });
+      }
+    });
+  }
 
   handleCloseButtonClick(event) {
     const target = event.target;
@@ -318,32 +357,32 @@ class FilterTemplate {
     // Extract the inner text of the span within the .selected-item
     const itemText = selectedItem.querySelector("span").innerText;
     const selectedItemsContainer = document.getElementById(
-    `selected-items-${this.attributeFilter}`
-  );
-  const sectionSelectedFilters = document.querySelector(
-    ".section-selected-filters"
-  );
-    [selectedItemsContainer, sectionSelectedFilters].forEach(container => {
+      `selected-items-${this.attributeFilter}`
+    );
+    const sectionSelectedFilters = document.querySelector(
+      ".section-selected-filters"
+    );
+    [selectedItemsContainer, sectionSelectedFilters].forEach((container) => {
       if (container) {
         // Get all span elements within .selected-item
-      const spans = container.querySelectorAll('.selected-item span');
+        const spans = container.querySelectorAll(".selected-item span");
 
-      // Find the matching item based on text content
-      let matchingItem = null;
-      spans.forEach(span => {
-        if (span.innerText === itemText) {
-          matchingItem = span.closest(".selected-item");
+        // Find the matching item based on text content
+        let matchingItem = null;
+        spans.forEach((span) => {
+          if (span.innerText === itemText) {
+            matchingItem = span.closest(".selected-item");
+          }
+        });
+
+        // Handle the removal of the selected item, if found
+        if (matchingItem) {
+          this.handleRemoveSelectedItem(matchingItem);
         }
-      });
-
-      // Handle the removal of the selected item, if found
-      if (matchingItem) {
-        this.handleRemoveSelectedItem(matchingItem);
       }
-    }
-  });
-}
-  
+    });
+  }
+
   handleRemoveSelectedItem(selectedItem) {
     if (selectedItem) {
       selectedItem.remove();
