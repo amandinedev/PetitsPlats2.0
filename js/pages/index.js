@@ -75,8 +75,6 @@ async function displayData() {
     filter.handleFilterListEvent();
     // Add event listener to the filter list to remove an option
     filter.handleFilterSelectedListEvent();
-    // filter.updateSelectedFilters(sectionSelectedFilters);
-
     // Check if an inputElement exists and add event listener accordingly to update list
     const inputElement = document.getElementById(`${attributeFilter}-input`);
     if (inputElement) {
@@ -87,7 +85,6 @@ async function displayData() {
         //re-attach event listeners
         filter.handleFilterListEvent();
         filter.handleFilterSelectedListEvent();
-        // filter.updateSelectedFilters(sectionSelectedFilters);
       });
     } else {
       console.log(`No input element found for attribute: ${attributeFilter}`);

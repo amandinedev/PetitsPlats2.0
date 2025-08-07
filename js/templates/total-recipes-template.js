@@ -1,13 +1,11 @@
 
   function getTotalRecipesInt() {
-    return new Promise((resolve) => {
-      document.addEventListener("DOMContentLoaded", () => {
+        return new Promise((resolve) => {
         let articles = document.querySelectorAll("article");
         let totalRecipes = articles.length;
         resolve(totalRecipes);
         console.log(totalRecipes);
       });
-    });
   }
 
   async function totalRecipesTemplate() {
@@ -16,9 +14,13 @@
 
   function getTotalRecipesDOM(totalRecipes) {
     const sectionFilters = document.querySelector(".section-filters");
+    sectionFilters.classList.add("position-relative");
     if (sectionFilters) {
-      sectionFilters.classList.add("position-relative");
-
+      let existingTotalRecipesDOM = document.querySelector(".total-recipes");
+      if (existingTotalRecipesDOM) {
+        sectionFilters.removeChild(existingTotalRecipesDOM);
+      }
+  
       const totalRecipesDOM = document.createElement("h2");
       totalRecipesDOM.textContent = `${totalRecipes} recettes`;
       totalRecipesDOM.classList.add(
