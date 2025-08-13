@@ -4,7 +4,7 @@
         let articles = document.querySelectorAll("article");
         let totalRecipes = articles.length;
         resolve(totalRecipes);
-        console.log(totalRecipes);
+        // console.log(totalRecipes);
       });
   }
 

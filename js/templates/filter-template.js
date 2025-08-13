@@ -8,16 +8,71 @@ class FilterData {
 
     this.ustensilList = recipes.flatMap((recipe) => recipe.ustensils);
   }
+
   getIngredientList() {
-    return this.ingredientList;
+    const ingredientList = this.formatListItems(this.ingredientList);
+    // console.log("Generated Ingredient List:", ingredientList);
+    return ingredientList;
   }
 
   getApplianceList() {
-    return this.applianceList;
+    const applianceList = this.formatListItems(this.applianceList);
+    // console.log("Generated Appliance List:", applianceList);
+    return applianceList;
   }
 
   getUstensilList() {
-    return this.ustensilList;
+    const ustensilList = this.formatListItems(this.ustensilList);
+    // console.log("Generated Ustensil List:", ustensilList);
+    return ustensilList;
+  }
+
+  updateListUsingValue(list, searchValue) {
+    if (searchValue && searchValue.length >= 3) {
+      // Check if value is provided and has at least 3 characters
+      const filteredItems = this.formatListItems(
+        list
+          .map((item) => formatAttribute(item)) // Format each item
+          .filter((item) => item.includes(searchValue))
+      );
+      // console.log(filteredItems);
+      return filteredItems;
+    } else {
+      // If searchValue is empty or less than 3
+      return list; // Update the list with original items without filtering
+    }
+  }
+
+  updateOtherList(filteredRecipes) {
+    this.ingredientList = filteredRecipes.flatMap((recipe) =>
+      recipe.ingredients.map((ingredient) => ingredient.ingredient)
+    );
+    this.applianceList = filteredRecipes.map((recipe) => recipe.appliance);
+    this.ustensilList = filteredRecipes.flatMap((recipe) => recipe.ustensils);
+
+    // console.log("Updated Ingredient List:", this.getIngredientList());
+    // console.log("Updated Appliance List:", this.getApplianceList());
+    // console.log("Updated Ustensil List:", this.getUstensilList());
+
+    return {
+      ingredients: this.getIngredientList(),
+      appareils: this.getApplianceList(),
+      ustensiles: this.getUstensilList(),
+    };
+  }
+
+  formatListItems(filterType) {
+    // Format items to capitalize first letter and lowercase rest of string
+    const listFormated = filterType
+      .map((item) => item.charAt(0).toUpperCase() + item.slice(1).toLowerCase())
+      .sort()
+      // Keeps only the first occurrence of each item in the array to avoid tag repetition and remove plurals
+      .filter(
+        (value, index, self) =>
+          index ===
+          self.findIndex((t) => t.replace(/s$/, "") === value.replace(/s$/, ""))
+      );
+    return listFormated;
   }
 }
 
@@ -79,11 +134,17 @@ function formatAccents(str) {
 
 // Define the base filterTemplate class.
 class FilterTemplate {
-  constructor(filter) {
+  constructor(filters) {
     this.filter = "";
     this.attributeFilter = formatAttribute(this.filter);
     this.filterType = "";
     this.selectedItems = [];
+    this.filterDataInstance = {};
+  }
+
+  useIngredientList() {
+    const ingredientList = this.filterMenuIngredients.filterDataInstance;
+    // console.log("Ingredient List:", ingredientList);
   }
 
   getFilterDOM() {
@@ -141,47 +202,40 @@ class FilterTemplate {
     return filter;
   }
 
-  generateListItems() {
-    const methodName = `get${this.filterType}List`;
-    //format items
-    const sortedItems = filterData[methodName]()
-      .map(
-        (item) =>
-          item.trim(0).charAt(0).toUpperCase() + item.slice(1).toLowerCase()
-      )
-      .sort()
-      // keeps only the first occurrence of each item in the array to avoid tag repetition and remove plurals
-      .filter(
-        (value, index, self) =>
-          index ===
-          self.findIndex((t) => t.replace(/s$/, "") === value.replace(/s$/, ""))
-      );
-    return sortedItems;
-  }
+  // generateListItems() {
+  //   const methodName = `get${this.filterType}List`;
+  //   //format items
+  //   const sortedItems = filterData[methodName]()
+  //     .map(
+  //       (item) =>
+  //         item.trim(0).charAt(0).toUpperCase() + item.slice(1).toLowerCase()
+  //     )
+  //     .sort()
+  //     // keeps only the first occurrence of each item in the array to avoid tag repetition and remove plurals
+  //     .filter(
+  //       (value, index, self) =>
+  //         index ===
+  //         self.findIndex((t) => t.replace(/s$/, "") === value.replace(/s$/, ""))
+  //     );
+  //   return sortedItems;
+  // }
 
   generateListHTML() {
-    const listItems = this.generateListItems()
+    let listItems = [];
+    listItems = this.filterDataInstance;
+
+    const htmlString = listItems
       .map(
         (item) =>
           `<li class="list-item button mt-2 mx-3" role="option" tabindex="0">${item}</li>`
       )
       .join("");
-    return listItems;
+
+    return htmlString;
   }
 
-  updateListItems(value) {
-    const sortedItems = this.generateListItems();
-    let filteredItems = sortedItems; // Initialize with all items
-    if (value.length >= 3) {
-      filteredItems = sortedItems.filter((item) =>
-        formatAttribute(item).includes(value)
-      );
-    }
-    return filteredItems;
-  }
-
-  generateUpdatedListHTML(attributeFilter, value) {
-    const updatedHTML = this.updateListItems(value)
+  generateUpdatedListHTML(filterData, attributeFilter, updatedList) {
+    const updatedHTML = updatedList
       .map(
         (item) =>
           `<li class="list-item button mt-2 mx-3" role="option" tabindex="0">${item}</li>`
@@ -190,7 +244,16 @@ class FilterTemplate {
 
     const listElement = document.querySelector(`.${attributeFilter}-list`);
     if (listElement) {
-      listElement.innerHTML = updatedHTML;
+      // listElement.innerHTML = updatedHTML;
+      // Clear all existing children
+      while (listElement.firstChild) {
+        listElement.removeChild(listElement.firstChild);
+      }
+      // Insert the new HTML content
+      listElement.insertAdjacentHTML("afterbegin", updatedHTML);
+      // Reassign event listeners to the newly generated list items
+      this.handleFilterListEvent(filterData, attributeFilter);
+      this.handleFilterSelectedListEvent(filterData);
     } else {
       this.generateListHTML();
     }
@@ -233,53 +296,74 @@ class FilterTemplate {
     }
   }
 
-  handleFilterListEvent() {
-    const listItems = document.querySelectorAll(
-      `.${this.attributeFilter}-list .list-item`
+  handleFilterListEvent(filterData, attributeFilter) {
+    let filterContainer = document.getElementById(`filter-${attributeFilter}`);
+    let listItems = filterContainer.querySelectorAll(
+      `.${attributeFilter}-list .list-item`
     );
-
     listItems.forEach((item) => {
       item.addEventListener("click", () => {
-        const sectionRecipes = document.querySelector(".section-recipes");
-        if (!this.isItemAlreadySelected(item.textContent)) {
-          this.createSelectedItemDOM(item.textContent);
-          this.getSelectedItems();
-          updateRecipesDOM(recipes, sectionRecipes, this.selectedItems);
-        }
+        this.handleItemSelection(filterData, attributeFilter, item);
       });
+
       item.addEventListener("keydown", (event) => {
-        const sectionRecipes = document.querySelector(".section-recipes");
-        if (
-          (event.key === "Enter" || event.key === " ") &&
-          !this.isItemAlreadySelected(item.textContent)
-        ) {
-          this.createSelectedItemDOM(item.textContent);
-          this.getSelectedItems();
-          updateRecipesDOM(recipes, sectionRecipes, this.selectedItems);
+        if (event.key === "Enter" || event.key === " ") {
+          this.handleItemSelection(filterData, attributeFilter, item, event);
         }
       });
     });
   }
 
-  getSelectedItems() {
-    const selectedItemsContainer = document.querySelector(
-      ".section-selected-filters"
-    );
-    if (selectedItemsContainer) {
-      // Check if there are any .selected-item elements within the container
-      const hasSelectedItem =
-        selectedItemsContainer.querySelector(".selected-item") !== null;
-      if (hasSelectedItem) {
-        this.selectedItems = Array.from(
-          selectedItemsContainer.querySelectorAll("span")
-        ).map((span) => span.innerText);
-      } else {
-        // set to empty filters
-        this.selectedItems = [];
+  handleItemSelection(filterData, attributeFilter, item, event = null) {
+    const sectionRecipes = document.querySelector(".section-recipes");
+    if (!this.isItemAlreadySelected(item.textContent)) {
+      this.selectedItems.push(item.textContent);
+      // console.log("selected items", this.selectedItems);
+
+      this.createSelectedItemDOM(item.textContent, attributeFilter);
+
+      // Update recipes DOM based on selected filters
+      const filteredRecipes = updateRecipesDOM(
+        recipes,
+        sectionRecipes,
+        this.selectedItems
+      );
+
+      // Get updated lists from filterDataInstance
+      const updatedLists = filterData.updateOtherList(filteredRecipes);
+      // console.log(updatedLists);
+
+      // Generate new HTML for each updated list
+      for (const [key, value] of Object.entries(updatedLists)) {
+        this.generateUpdatedListHTML(filterData, key, value);
       }
     }
-    console.log(this.selectedItems);
-    return this.selectedItems;
+  }
+
+  handleItemUnSelection(filterData, selectedItem) {
+    const sectionRecipes = document.querySelector(".section-recipes");
+    // Remove item from selectedItems
+    const itemText = selectedItem.querySelector("span").innerText;
+    if (itemText && this.selectedItems.includes(itemText)) {
+      this.selectedItems = this.selectedItems.filter(
+        (item) => item !== itemText
+      );
+      // console.log(this.selectedItems, "after removal");
+    }
+    // Update recipes DOM based on selected filters
+    const filteredRecipes = updateRecipesDOM(
+      recipes,
+      sectionRecipes,
+      this.selectedItems
+    );
+    // Get updated lists from filterDataInstance
+    const updatedListsAfterRemoval =
+      filterData.updateOtherList(filteredRecipes);
+    // console.log(updatedListsAfterRemoval);
+    // Generate new HTML for each updated list
+    for (const [key, value] of Object.entries(updatedListsAfterRemoval)) {
+      this.generateUpdatedListHTML(filterData, key, value);
+    }
   }
 
   //check if an item is already selected
@@ -294,7 +378,44 @@ class FilterTemplate {
     return false;
   }
 
-  handleFilterSelectedListEvent() {
+  handleFilterSelectedListEvent(filterData, attributeFilter) {
+    // Ensure filterData is defined, if not return early
+    if (typeof filterData === "undefined") {
+      console.warn("filterData is undefined");
+      return;
+    }
+
+    const closeButtons = document.querySelectorAll(".close-button");
+    closeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const selectedItem = button.closest(".selected-item");
+        if (selectedItem) {
+          this.closeMatchingItem(selectedItem);
+          this.handleRemoveSelectedItem(selectedItem);
+          this.handleItemUnSelection(filterData, selectedItem);
+        }
+      });
+      button.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === "Space") {
+          // Assuming you want to handle Enter key press
+          const selectedItem = button.closest(".selected-item");
+          if (selectedItem) {
+            this.closeMatchingItem(selectedItem, attributeFilter);
+            this.handleRemoveSelectedItem(selectedItem);
+            this.handleItemUnSelection(filterData, selectedItem);
+          }
+        }
+      });
+    });
+  }
+
+  OldhandleFilterSelectedListEvent(filterData) {
+    // Ensure filterData is defined, if not return early
+    if (typeof filterData === "undefined") {
+      console.warn("filterData is undefined");
+      return;
+    }
+
     const selectedItemsContainer = document.getElementById(
       `selected-items-${this.attributeFilter}`
     );
@@ -311,14 +432,12 @@ class FilterTemplate {
         container.addEventListener("click", (event) => {
           const sectionRecipes = document.querySelector(".section-recipes");
           this.handleCloseButtonClick(event);
-          this.getSelectedItems();
-          updateRecipesDOM(recipes, sectionRecipes, this.selectedItems);
+          this.handleItemUnSelection(filterData, event);
         });
         container.addEventListener("keydown", (event) => {
           const sectionRecipes = document.querySelector(".section-recipes");
-          this.handleKeyDown(event);
-          this.getSelectedItems();
-          updateRecipesDOM(recipes, sectionRecipes, this.selectedItems);
+          this.handleKeyDown(filterData, event);
+          this.handleItemUnSelection(filterData, event);
         });
       }
     });
@@ -332,13 +451,13 @@ class FilterTemplate {
     ) {
       const selectedItem = target.closest(".selected-item");
       if (selectedItem) {
-        this.handleRemoveSelectedItem(selectedItem);
         this.closeMatchingItem(selectedItem);
+        this.handleRemoveSelectedItem(selectedItem);
       }
     }
   }
 
-  handleKeyDown(event) {
+  handleKeyDown(filterData, event) {
     const target = event.target;
     if (
       ((event.key === "Enter" || event.key === "Space") &&
@@ -347,40 +466,34 @@ class FilterTemplate {
     ) {
       const selectedItem = target.closest(".selected-item");
       if (selectedItem) {
-        this.handleRemoveSelectedItem(selectedItem);
         this.closeMatchingItem(selectedItem);
+        this.handleRemoveSelectedItem(selectedItem);
       }
     }
   }
 
-  closeMatchingItem(selectedItem) {
+  closeMatchingItem(selectedItem, attributeFilter) {
     // Extract the inner text of the span within the .selected-item
-    const itemText = selectedItem.querySelector("span").innerText;
-    const selectedItemsContainer = document.getElementById(
-      `selected-items-${this.attributeFilter}`
-    );
-    const sectionSelectedFilters = document.querySelector(
-      ".section-selected-filters"
-    );
-    [selectedItemsContainer, sectionSelectedFilters].forEach((container) => {
-      if (container) {
-        // Get all span elements within .selected-item
-        const spans = container.querySelectorAll(".selected-item span");
+    let itemText = selectedItem.querySelector("span").innerText;
+    let target;
+    if (selectedItem.closest(`.section-selected-filters`)) {
+      target = document.querySelector(".section-filters");
+    } else {
+      target = document.querySelector(".section-selected-filters");
+    }
 
-        // Find the matching item based on text content
-        let matchingItem = null;
-        spans.forEach((span) => {
-          if (span.innerText === itemText) {
-            matchingItem = span.closest(".selected-item");
-          }
-        });
-
-        // Handle the removal of the selected item, if found
+    // Find the matching item based on text content
+    let spans = target.querySelectorAll(".selected-item span");
+    for (let span of spans) {
+      if (span.innerText === itemText) {
+        // Found a matching item, remove it from DOM
+        let matchingItem = span.closest(".selected-item");
         if (matchingItem) {
-          this.handleRemoveSelectedItem(matchingItem);
+          matchingItem.remove();
         }
+        break; // Exit loop once we found and removed the match
       }
-    });
+    }
   }
 
   handleRemoveSelectedItem(selectedItem) {
@@ -389,9 +502,9 @@ class FilterTemplate {
     }
   }
 
-  createSelectedItemDOM(text) {
+  createSelectedItemDOM(text, attributeFilter) {
     const selectedItemsContainer = document.getElementById(
-      `selected-items-${this.attributeFilter}`
+      `selected-items-${attributeFilter}`
     );
     if (selectedItemsContainer) {
       const selectedItemList = document.createElement("li");
@@ -467,34 +580,34 @@ class FilterTemplate {
 }
 
 class FilterMenuIngredients extends FilterTemplate {
-  constructor() {
+  constructor(ingredientList) {
     super();
     this.filter = "Ingrédients";
     this.attributeFilter = formatAttribute(this.filter);
     this.filterType = "Ingredient";
+    this.filterDataInstance = ingredientList;
+    // console.log("ingredientsList:", this.filterDataInstance);
   }
 }
 
 class FilterMenuAppliances extends FilterTemplate {
-  constructor() {
+  constructor(applianceList) {
     super();
     this.filter = "Appareils";
     this.attributeFilter = formatAttribute(this.filter);
     this.filterType = "Appliance";
+    this.filterDataInstance = applianceList;
+    // console.log("appliancesList:", this.filterDataInstance);
   }
 }
 
 class FilterMenuUstensils extends FilterTemplate {
-  constructor() {
+  constructor(ustensilList) {
     super();
     this.filter = "Ustensiles";
     this.attributeFilter = formatAttribute(this.filter);
     this.filterType = "Ustensil";
+    this.filterDataInstance = ustensilList;
+    // console.log("ustensilsList:", this.filterDataInstance);
   }
 }
-
-const filterData = new FilterData(recipes);
-
-console.log(filterData.getIngredientList());
-console.log(filterData.getApplianceList());
-console.log(filterData.getUstensilList());

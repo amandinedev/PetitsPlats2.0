@@ -63,23 +63,24 @@ class RecipeTemplate {
 
 
 function updateRecipesDOM(recipes, sectionRecipes, selectedItems) {
-  console.log("Updating Recipes with:", selectedItems);
+  // console.log("Updating Recipes with:", selectedItems);
   // Clear existing recipes in the DOM
   while (sectionRecipes.firstChild) {
     sectionRecipes.removeChild(sectionRecipes.firstChild);
   }
   // Filter recipes based on the selected items
   const filteredRecipes = filterRecipesBySelectedItems(recipes, selectedItems);
-  console.log(filteredRecipes);
+  // console.log(filteredRecipes);
 
   // Display filtered recipes in the DOM
   filteredRecipes.forEach((recipeData) => {
     const recipe = new RecipeTemplate(recipeData);
     sectionRecipes.appendChild(recipe.getRecipesDOM());
   });
-  
   // Update total recipes count
   totalRecipesTemplate();
+  return filteredRecipes;
+
 }
 
 function filterRecipesBySelectedItems(recipes, selectedItems) {

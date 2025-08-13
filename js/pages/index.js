@@ -45,56 +45,44 @@ async function displayData() {
     "mx-auto"
   );
 
-  const filterMenuIngredients = new FilterMenuIngredients();
-  const filterMenuAppliances = new FilterMenuAppliances();
-  const filterMenuUstensils = new FilterMenuUstensils();
-
   const filterData = new FilterData(recipes);
+    // console.log("FilterData:", filterData);
+  if (!filterData) {
+    throw new Error("FilterData could not be created");
+  }
 
-  const filters = [
-    {
-      filter: filterMenuIngredients,
-      attributeFilter: filterMenuIngredients.attributeFilter,
-      filterType: filterMenuIngredients.filterType,
-    },
-    {
-      filter: filterMenuAppliances,
-      attributeFilter: filterMenuAppliances.attributeFilter,
-      filterType: filterMenuAppliances.filterType,
-    },
-    {
-      filter: filterMenuUstensils,
-      attributeFilter: filterMenuUstensils.attributeFilter,
-      filterType: filterMenuUstensils.filterType,
-    },
-  ];
+  const filterMenuIngredients = new FilterMenuIngredients(filterData.getIngredientList());
+  const filterMenuAppliances = new FilterMenuAppliances(filterData.getApplianceList());
+  const filterMenuUstensils = new FilterMenuUstensils(filterData.getUstensilList());
+  
+  const filters = [filterMenuIngredients, filterMenuAppliances, filterMenuUstensils];
+  // console.log("filters",filters);
 
-  filters.forEach(({ filter, filterType, attributeFilter }) => {
+  filters.forEach(filter => {
     sectionFilters.appendChild(filter.getFilterDOM());
     // Add event listener to the filter list to select an option
-    filter.handleFilterListEvent();
+    const attributeFilter = filter.attributeFilter;
+    const filterDataInstance = filter.filterDataInstance;
+    filter.handleFilterListEvent(filterData, attributeFilter);
     // Add event listener to the filter list to remove an option
-    filter.handleFilterSelectedListEvent();
+    filter.handleFilterSelectedListEvent(filterData, attributeFilter);
     // Check if an inputElement exists and add event listener accordingly to update list
     const inputElement = document.getElementById(`${attributeFilter}-input`);
     if (inputElement) {
       inputElement.addEventListener("input", () => {
-        const value = formatAttribute(inputElement.value);
-        console.log(value);
-        filter.generateUpdatedListHTML(attributeFilter, value);
+        const searchValue = formatAttribute(inputElement.value);
+        console.log(searchValue);
+        const updatedList = filterData.updateListUsingValue(filterDataInstance, searchValue);
+        console.log(updatedList);
+        filter.generateUpdatedListHTML(filterData, attributeFilter, updatedList);
         //re-attach event listeners
-        filter.handleFilterListEvent();
-        filter.handleFilterSelectedListEvent();
+        filter.handleFilterListEvent(filterData, attributeFilter);
+        filter.handleFilterSelectedListEvent(filterData);
       });
     } else {
       console.log(`No input element found for attribute: ${attributeFilter}`);
     }
-  });
-
   // Add event listener to the filter buttons
-  const filterTemplateInstance = new FilterTemplate();
-
-  filters.forEach(({ attributeFilter }) => {
     const filterButton = document.getElementById(
       `filter-button-${attributeFilter}`
     );
@@ -109,7 +97,7 @@ async function displayData() {
     );
 
     filterButton.addEventListener("click", () =>
-      filterTemplateInstance.handleFilterButtonEvent(
+      filter.handleFilterButtonEvent(
         attributeFilter,
         filterButton,
         filterOptions,
@@ -119,7 +107,16 @@ async function displayData() {
     );
     filterButton.addEventListener("keydown", function (event) {
       if (event.key === "Enter" || event.key === "Space") {
-        filterTemplateInstance.handleFilterButtonEvent(
+        filter.handleFilterButtonEvent(
+          attributeFilter,
+          filterButton,
+          filterOptions,
+          filterClosedImgElement,
+          filterOpenedImgElement
+        );
+      }
+      if (event.key === "Escape") {
+        filter.handleFilterButtonEvent(
           attributeFilter,
           filterButton,
           filterOptions,
@@ -129,6 +126,7 @@ async function displayData() {
       }
     });
   });
+
 
   //recipes
   const sectionRecipes = document.createElement("section");
