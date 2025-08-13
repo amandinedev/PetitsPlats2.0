@@ -53,6 +53,8 @@ main * {
   font-family: "Manrope", sans-serif;
   border: none;
   background-color: transparent;
+  color: #7A7A7A;
+  font-size: 1rem;
 }
 
 @media (max-width: 600px) {
@@ -91,11 +93,18 @@ main * {
   border: 2px solid #C6C6C6 !important;
   border-radius: 5px;
   height: 3rem;
+  color: #7A7A7A;
+  font-size: 0.875rem;
+}
+
+.custom-clear-input-filter {
+  margin-right: 3.2rem;
+  margin-bottom: 1rem;
 }
 
 .custom-loop-light {
-  height: 2rem;
-  margin-bottom: 0.5rem;
+  height: 1.5rem;
+  margin-bottom: 0.6rem;
 }
 
 .custom-filter-list {

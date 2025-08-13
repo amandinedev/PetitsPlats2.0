@@ -1,6 +1,11 @@
 async function displayData() {
   //header
   const headerDisplay = headerTemplate();
+  const inputElement = document.querySelector(".custom-input-header");
+  const clearButton = document.querySelector(".custom-clear-input-header");
+  if (inputElement) {
+    setupClearInputButton(inputElement, clearButton);
+  }
 
   //filters
   const main = document.getElementById("main");
@@ -46,19 +51,29 @@ async function displayData() {
   );
 
   const filterData = new FilterData(recipes);
-    // console.log("FilterData:", filterData);
+  // console.log("FilterData:", filterData);
   if (!filterData) {
     throw new Error("FilterData could not be created");
   }
 
-  const filterMenuIngredients = new FilterMenuIngredients(filterData.getIngredientList());
-  const filterMenuAppliances = new FilterMenuAppliances(filterData.getApplianceList());
-  const filterMenuUstensils = new FilterMenuUstensils(filterData.getUstensilList());
-  
-  const filters = [filterMenuIngredients, filterMenuAppliances, filterMenuUstensils];
+  const filterMenuIngredients = new FilterMenuIngredients(
+    filterData.getIngredientList()
+  );
+  const filterMenuAppliances = new FilterMenuAppliances(
+    filterData.getApplianceList()
+  );
+  const filterMenuUstensils = new FilterMenuUstensils(
+    filterData.getUstensilList()
+  );
+
+  const filters = [
+    filterMenuIngredients,
+    filterMenuAppliances,
+    filterMenuUstensils,
+  ];
   // console.log("filters",filters);
 
-  filters.forEach(filter => {
+  filters.forEach((filter) => {
     sectionFilters.appendChild(filter.getFilterDOM());
     // Add event listener to the filter list to select an option
     const attributeFilter = filter.attributeFilter;
@@ -68,13 +83,22 @@ async function displayData() {
     filter.handleFilterSelectedListEvent(filterData, attributeFilter);
     // Check if an inputElement exists and add event listener accordingly to update list
     const inputElement = document.getElementById(`${attributeFilter}-input`);
+    const clearButton = document.querySelector(".custom-clear-input-filter");
     if (inputElement) {
+      setupClearInputButton(inputElement, clearButton);
       inputElement.addEventListener("input", () => {
         const searchValue = formatAttribute(inputElement.value);
         console.log(searchValue);
-        const updatedList = filterData.updateListUsingValue(filterDataInstance, searchValue);
+        const updatedList = filterData.updateListUsingValue(
+          filterDataInstance,
+          searchValue
+        );
         console.log(updatedList);
-        filter.generateUpdatedListHTML(filterData, attributeFilter, updatedList);
+        filter.generateUpdatedListHTML(
+          filterData,
+          attributeFilter,
+          updatedList
+        );
         //re-attach event listeners
         filter.handleFilterListEvent(filterData, attributeFilter);
         filter.handleFilterSelectedListEvent(filterData);
@@ -82,7 +106,7 @@ async function displayData() {
     } else {
       console.log(`No input element found for attribute: ${attributeFilter}`);
     }
-  // Add event listener to the filter buttons
+    // Add event listener to the filter buttons
     const filterButton = document.getElementById(
       `filter-button-${attributeFilter}`
     );
@@ -126,7 +150,6 @@ async function displayData() {
       }
     });
   });
-
 
   //recipes
   const sectionRecipes = document.createElement("section");

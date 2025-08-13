@@ -181,8 +181,9 @@ class FilterTemplate {
       <searchbar class="custom-searchbar position-relative d-flex w-100 h-100 mt-2 mb-2">
         <input id="${
           this.attributeFilter
-        }-input" class="custom-input-filter w-100 mt-2 mx-3" type="text"></input>
-        <img src="./assets/icons/icon-loop-light.svg" class="custom-loop-light button position-absolute end-0 bottom-0 p-1 me-4" alt="rechercher" role="button" tabindex="0">
+        }-input" class="custom-input-filter w-100 mt-2 mx-3 ps-2" type="text"></input>
+        <img src="./assets/icons/icon-reset-input2.svg" class="custom-clear-input-filter button d-none position-absolute end-0 bottom-0 p-1" alt="clear input" tabindex="0">
+        <img src="./assets/icons/icon-loop-light.svg" class="custom-loop-light position-absolute end-0 bottom-0 p-1 me-4" alt="">
       </searchbar>
       <div class="custom-filter-list">
         <ul id="selected-items-${
@@ -201,24 +202,6 @@ class FilterTemplate {
     //if input lenght >1 show icon close
     return filter;
   }
-
-  // generateListItems() {
-  //   const methodName = `get${this.filterType}List`;
-  //   //format items
-  //   const sortedItems = filterData[methodName]()
-  //     .map(
-  //       (item) =>
-  //         item.trim(0).charAt(0).toUpperCase() + item.slice(1).toLowerCase()
-  //     )
-  //     .sort()
-  //     // keeps only the first occurrence of each item in the array to avoid tag repetition and remove plurals
-  //     .filter(
-  //       (value, index, self) =>
-  //         index ===
-  //         self.findIndex((t) => t.replace(/s$/, "") === value.replace(/s$/, ""))
-  //     );
-  //   return sortedItems;
-  // }
 
   generateListHTML() {
     let listItems = [];
@@ -407,69 +390,6 @@ class FilterTemplate {
         }
       });
     });
-  }
-
-  OldhandleFilterSelectedListEvent(filterData) {
-    // Ensure filterData is defined, if not return early
-    if (typeof filterData === "undefined") {
-      console.warn("filterData is undefined");
-      return;
-    }
-
-    const selectedItemsContainer = document.getElementById(
-      `selected-items-${this.attributeFilter}`
-    );
-    const sectionSelectedFilters = document.querySelector(
-      ".section-selected-filters"
-    );
-
-    // Ensure both containers are defined to avoid null errors
-    if (!selectedItemsContainer && !sectionSelectedFilters) return;
-
-    // Add event listeners to both containers
-    [selectedItemsContainer, sectionSelectedFilters].forEach((container) => {
-      if (container) {
-        container.addEventListener("click", (event) => {
-          const sectionRecipes = document.querySelector(".section-recipes");
-          this.handleCloseButtonClick(event);
-          this.handleItemUnSelection(filterData, event);
-        });
-        container.addEventListener("keydown", (event) => {
-          const sectionRecipes = document.querySelector(".section-recipes");
-          this.handleKeyDown(filterData, event);
-          this.handleItemUnSelection(filterData, event);
-        });
-      }
-    });
-  }
-
-  handleCloseButtonClick(event) {
-    const target = event.target;
-    if (
-      target.classList.contains("close-button") ||
-      target.closest(".close-button")
-    ) {
-      const selectedItem = target.closest(".selected-item");
-      if (selectedItem) {
-        this.closeMatchingItem(selectedItem);
-        this.handleRemoveSelectedItem(selectedItem);
-      }
-    }
-  }
-
-  handleKeyDown(filterData, event) {
-    const target = event.target;
-    if (
-      ((event.key === "Enter" || event.key === "Space") &&
-        target.classList.contains("close-button")) ||
-      target.closest(".close-button")
-    ) {
-      const selectedItem = target.closest(".selected-item");
-      if (selectedItem) {
-        this.closeMatchingItem(selectedItem);
-        this.handleRemoveSelectedItem(selectedItem);
-      }
-    }
   }
 
   closeMatchingItem(selectedItem, attributeFilter) {
