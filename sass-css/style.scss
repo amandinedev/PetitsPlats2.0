@@ -44,6 +44,10 @@ main * {
   width: 55%;
 }
 
+.searchbar {
+height: 7vh;
+}
+
 .custom-searchbar {
   height: 6.2vh;
   width: 65%;
@@ -58,6 +62,9 @@ main * {
   background-color: transparent;
   color: $grey;
   font-size: 1rem;
+}
+.error-message {
+  color: $yellow;
 }
 
 @media (max-width: 600px) {

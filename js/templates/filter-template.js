@@ -181,9 +181,11 @@ class FilterTemplate {
       <searchbar class="custom-searchbar position-relative d-flex w-100 h-100 mt-2 mb-2">
         <input id="${
           this.attributeFilter
-        }-input" class="custom-input-filter w-100 mt-2 mx-3 ps-2" type="text"></input>
-        <img src="./assets/icons/icon-reset-input2.svg" class="custom-clear-input-filter button d-none position-absolute end-0 bottom-0 p-1" alt="clear input" tabindex="0">
-        <img src="./assets/icons/icon-loop-light.svg" class="custom-loop-light position-absolute end-0 bottom-0 p-1 me-4" alt="">
+        }-input" class="custom-input-filter w-100 mt-2 mx-3 ps-2" type="text" aria-label="search input, minimum 3 characters"></input>
+        <img src="./assets/icons/icon-reset-input2.svg" 
+        class="custom-clear-input-filter button d-none position-absolute end-0 bottom-0 p-1" alt="clear input" tabindex="0">
+        <img src="./assets/icons/icon-loop-light.svg" 
+        class="custom-loop-light position-absolute end-0 bottom-0 p-1 me-4" alt="">
       </searchbar>
       <div class="custom-filter-list">
         <ul id="selected-items-${
@@ -279,7 +281,7 @@ class FilterTemplate {
     }
   }
 
-  handleFilterListEvent(filterData, attributeFilter) {
+  handleFilterListEvent(filterData, attributeFilter, filteredRecipesByHeader) {
     let filterContainer = document.getElementById(`filter-${attributeFilter}`);
     let listItems = filterContainer.querySelectorAll(
       `.${attributeFilter}-list .list-item`
@@ -305,44 +307,51 @@ class FilterTemplate {
 
       this.createSelectedItemDOM(item.textContent, attributeFilter);
 
-      // Update recipes DOM based on selected filters
-      const filteredRecipes = updateRecipesDOM(
-        recipes,
-        sectionRecipes,
-        this.selectedItems
-      );
-
-      // Get updated lists from filterDataInstance
-      const updatedLists = filterData.updateOtherList(filteredRecipes);
-      // console.log(updatedLists);
-
-      // Generate new HTML for each updated list
-      for (const [key, value] of Object.entries(updatedLists)) {
-        this.generateUpdatedListHTML(filterData, key, value);
-      }
+      this.updateFiltersAndRecipes.call(this, filterData);
     }
   }
 
   handleItemUnSelection(filterData, selectedItem) {
     const sectionRecipes = document.querySelector(".section-recipes");
+
     // Remove item from selectedItems
     const itemText = selectedItem.querySelector("span").innerText;
     if (itemText && this.selectedItems.includes(itemText)) {
       this.selectedItems = this.selectedItems.filter(
         (item) => item !== itemText
       );
+
       // console.log(this.selectedItems, "after removal");
+
+      this.updateFiltersAndRecipes.call(this, filterData);
     }
-    // Update recipes DOM based on selected filters
-    const filteredRecipes = updateRecipesDOM(
+  }
+
+  updateFiltersAndRecipes(filterData) {
+    // Filter recipes based on the header input
+    const headerInputElement = document.querySelector(".custom-input-header");
+    const filteredRecipesByHeader = filterRecipesByHeader(
+      formatAttribute(headerInputElement.value)
+    );
+
+    // Filter recipes based on selected items (filters)
+    const filteredRecipesBySelectedItems = filterRecipesBySelectedItems(
       recipes,
-      sectionRecipes,
       this.selectedItems
     );
-    // Get updated lists from filterDataInstance
+
+    // Get the intersection of both filtered lists
+    const filteredRecipes = filteredRecipesByHeader.filter((recipe) =>
+      filteredRecipesBySelectedItems.includes(recipe)
+    );
+
+    // Update the recipe DOM with the intersected recipes
+    updateRecipeDOM(filteredRecipes);
+
+    // Get updated lists from filterDataInstance after removal of an item
     const updatedListsAfterRemoval =
       filterData.updateOtherList(filteredRecipes);
-    // console.log(updatedListsAfterRemoval);
+
     // Generate new HTML for each updated list
     for (const [key, value] of Object.entries(updatedListsAfterRemoval)) {
       this.generateUpdatedListHTML(filterData, key, value);

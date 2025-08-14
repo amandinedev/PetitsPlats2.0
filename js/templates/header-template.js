@@ -9,12 +9,19 @@ async function headerTemplate() {
         <div class="container d-flex flex-column align-items-center mt-5 mx-auto">
           <h1 class="custom-h1 text-center d-flex mt-5 pt-5">
           CHERCHEZ PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN,SIMPLES ET DÉLICIEUSES</h1>
+          <div class="searchbar container-fluid d-flex flex-column align-items-center ">
           <searchbar class="custom-searchbar container-fluid d-flex flex-row mt-2">
-            <input type="text" class="form-control custom-input-header fs-6 ps-4 me-3" placeholder="Rechercher une recette, un ingrédient..." tabindex="0">
-            <img src="./assets/icons/icon-reset-input.svg" class="custom-clear-input-header button d-none my-auto me-3 p-1" alt="clear input" tabindex="0">
-            <img id="search-icon-dark" class="button d-flex h-75 end-0 me-1 my-auto" src="./assets/icons/icon-loop-dark.svg" role="button" alt"" aria-label="Rechercher une recette, un ingredient" tabindex="0" >
+            <input type="text" class="form-control custom-input-header fs-6 ps-4 me-3" 
+            placeholder="Rechercher une recette, un ingrédient..." type="text" tabindex="0" 
+            aria-label="search input, minimum 3 characters">
+            <img src="./assets/icons/icon-reset-input.svg" 
+            class="custom-clear-input-header button d-none my-auto me-3 p-1" alt="clear input" tabindex="0">
+            <img id="search-icon-dark" class="button d-flex h-75 end-0 me-1 my-auto" 
+            src="./assets/icons/icon-loop-dark.svg" role="button" alt"" 
+            aria-label="Rechercher une recette, un ingredient" tabindex="0" >
             <img id="search-icon-yellow"class="button d-flex h-75 end-0 me-1 my-auto d-none" src="./assets/icons/icon-loop-yellow.svg" role="button" alt="" >
           </searchbar>
+          </div>
         </div>
     </div>
     `;
@@ -70,16 +77,5 @@ function setupClearInputButton(inputElement, clearButton) {
     }
   });
 
-  function handleClearAction() {
-    inputElement.value = "";
-    clearButton.classList.add("d-none");
-  }
-
-  clearButton.addEventListener("click", handleClearAction);
-  clearButton.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      handleClearAction();
-    }
-  });
+  
 }

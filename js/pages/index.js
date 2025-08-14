@@ -1,11 +1,28 @@
 async function displayData() {
+  const filterData = new FilterData(recipes);
+  // console.log("FilterData:", filterData);
+  if (!filterData) {
+    throw new Error("FilterData could not be created");
+  }
+
+  const filterMenuIngredients = new FilterMenuIngredients(
+    filterData.getIngredientList()
+  );
+  const filterMenuAppliances = new FilterMenuAppliances(
+    filterData.getApplianceList()
+  );
+  const filterMenuUstensils = new FilterMenuUstensils(
+    filterData.getUstensilList()
+  );
+
+  const filters = [
+    filterMenuIngredients,
+    filterMenuAppliances,
+    filterMenuUstensils,
+  ];
+
   //header
   const headerDisplay = headerTemplate();
-  const inputElement = document.querySelector(".custom-input-header");
-  const clearButton = document.querySelector(".custom-clear-input-header");
-  if (inputElement) {
-    setupClearInputButton(inputElement, clearButton);
-  }
 
   //filters
   const main = document.getElementById("main");
@@ -50,38 +67,85 @@ async function displayData() {
     "mx-auto"
   );
 
-  const filterData = new FilterData(recipes);
-  // console.log("FilterData:", filterData);
-  if (!filterData) {
-    throw new Error("FilterData could not be created");
-  }
-
-  const filterMenuIngredients = new FilterMenuIngredients(
-    filterData.getIngredientList()
-  );
-  const filterMenuAppliances = new FilterMenuAppliances(
-    filterData.getApplianceList()
-  );
-  const filterMenuUstensils = new FilterMenuUstensils(
-    filterData.getUstensilList()
-  );
-
-  const filters = [
-    filterMenuIngredients,
-    filterMenuAppliances,
-    filterMenuUstensils,
-  ];
-  // console.log("filters",filters);
-
   filters.forEach((filter) => {
     sectionFilters.appendChild(filter.getFilterDOM());
     // Add event listener to the filter list to select an option
+  });
+
+  //recipes
+  const sectionRecipes = document.createElement("section");
+  main.appendChild(sectionRecipes);
+  sectionRecipes.classList.add(
+    "section-recipes",
+    "container-fluid",
+    "d-flex",
+    "flex-wrap",
+    "justify-content-center",
+    "lg-justify-content-start",
+    "gap-5",
+    "mt-5",
+    "mx-auto"
+  );
+
+  function displayRecipeSection(recipes) {
+    recipes.forEach((recipeData) => {
+      const recipe = new RecipeTemplate(recipeData);
+      sectionRecipes.appendChild(recipe.getRecipesDOM());
+    });
+
+    //total recipes DOM
+    totalRecipesTemplate();
+  }
+
+  displayRecipeSection(recipes);
+
+  //add event listeners
+
+  // for clear buttons
+  const inputElement = document.querySelector(".custom-input-header");
+  const clearButton = document.querySelector(".custom-clear-input-header");
+  if (inputElement) {
+    setupClearInputButton(inputElement, clearButton);
+
+    function handleClearAction(recipes, filterData) {
+      inputElement.value = "";
+      clearButton.classList.add("d-none");
+      filters.forEach((filter) => {
+      filter.updateFiltersAndRecipes(filterData);
+     });
+    }
+
+    clearButton.addEventListener("click", () =>
+      handleClearAction(recipes, filterData)
+    );
+    clearButton.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        handleClearAction(recipes, filterData);
+      }
+    });
+
+    // for the header input
+    inputElement.addEventListener("input", () => {
+      const formattedSearchValue = formatAttribute(inputElement.value);
+      console.log(formattedSearchValue);
+      const filteredRecipesByHeader =
+        filterRecipesByHeader(formattedSearchValue);
+      filters.forEach((filter) => {
+      filter.updateFiltersAndRecipes(filterData, filteredRecipesByHeader);
+      });
+    });
+  }
+
+  //for filters
+  filters.forEach((filter) => {
     const attributeFilter = filter.attributeFilter;
     const filterDataInstance = filter.filterDataInstance;
     filter.handleFilterListEvent(filterData, attributeFilter);
     // Add event listener to the filter list to remove an option
     filter.handleFilterSelectedListEvent(filterData, attributeFilter);
     // Check if an inputElement exists and add event listener accordingly to update list
+    // Update recipes based on the current filter state and header search results
     const inputElement = document.getElementById(`${attributeFilter}-input`);
     const clearButton = document.querySelector(".custom-clear-input-filter");
     if (inputElement) {
@@ -150,29 +214,6 @@ async function displayData() {
       }
     });
   });
-
-  //recipes
-  const sectionRecipes = document.createElement("section");
-  main.appendChild(sectionRecipes);
-  sectionRecipes.classList.add(
-    "section-recipes",
-    "container-fluid",
-    "d-flex",
-    "flex-wrap",
-    "justify-content-center",
-    "lg-justify-content-start",
-    "gap-5",
-    "mt-5",
-    "mx-auto"
-  );
-
-  recipes.forEach((recipeData) => {
-    const recipe = new RecipeTemplate(recipeData);
-    sectionRecipes.appendChild(recipe.getRecipesDOM());
-  });
-
-  //total recipes DOM
-  totalRecipesTemplate();
 }
 
 async function init() {
