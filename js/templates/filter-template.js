@@ -11,19 +11,16 @@ class FilterData {
 
   getIngredientList() {
     const ingredientList = this.formatListItems(this.ingredientList);
-    // console.log("Generated Ingredient List:", ingredientList);
     return ingredientList;
   }
 
   getApplianceList() {
     const applianceList = this.formatListItems(this.applianceList);
-    // console.log("Generated Appliance List:", applianceList);
     return applianceList;
   }
 
   getUstensilList() {
     const ustensilList = this.formatListItems(this.ustensilList);
-    // console.log("Generated Ustensil List:", ustensilList);
     return ustensilList;
   }
 
@@ -35,7 +32,6 @@ class FilterData {
           .map((item) => formatAttribute(item)) // Format each item
           .filter((item) => item.includes(searchValue))
       );
-      // console.log(filteredItems);
       return filteredItems;
     } else {
       // If searchValue is empty or less than 3
@@ -49,10 +45,6 @@ class FilterData {
     );
     this.applianceList = filteredRecipes.map((recipe) => recipe.appliance);
     this.ustensilList = filteredRecipes.flatMap((recipe) => recipe.ustensils);
-
-    // console.log("Updated Ingredient List:", this.getIngredientList());
-    // console.log("Updated Appliance List:", this.getApplianceList());
-    // console.log("Updated Ustensil List:", this.getUstensilList());
 
     return {
       ingredients: this.getIngredientList(),
@@ -144,7 +136,6 @@ class FilterTemplate {
 
   useIngredientList() {
     const ingredientList = this.filterMenuIngredients.filterDataInstance;
-    // console.log("Ingredient List:", ingredientList);
   }
 
   getFilterDOM() {
@@ -165,7 +156,7 @@ class FilterTemplate {
      <div id="filter-button-${
        this.attributeFilter
      }" class="container button d-flex flex-row justify-content-between w-100 py-4 px-4" role="button" aria-haspopup="listbox" aria-expanded="false" tabindex="0">
-        <label class="fw-medium" for="${this.attributeFilter}">${
+        <label for="${this.attributeFilter}-input" class="fw-medium" for="${this.attributeFilter}">${
       this.filter
     }</label>
         <img src="./assets/icons/icon-arrow-closed.svg" id="filter-closed-${
@@ -183,7 +174,7 @@ class FilterTemplate {
           this.attributeFilter
         }-input" class="custom-input-filter w-100 mt-2 mx-3 ps-2" type="text" aria-label="search input, minimum 3 characters"></input>
         <img src="./assets/icons/icon-reset-input2.svg" 
-        class="custom-clear-input-filter button d-none position-absolute end-0 bottom-0 p-1" alt="clear input" tabindex="0">
+        class="custom-clear-input-filter custom-clear-input-filter-${this.attributeFilter} button d-none position-absolute end-0 bottom-0 p-1" alt="clear input" tabindex="0">
         <img src="./assets/icons/icon-loop-light.svg" 
         class="custom-loop-light position-absolute end-0 bottom-0 p-1 me-4" alt="">
       </searchbar>
@@ -303,7 +294,6 @@ class FilterTemplate {
     const sectionRecipes = document.querySelector(".section-recipes");
     if (!this.isItemAlreadySelected(item.textContent)) {
       this.selectedItems.push(item.textContent);
-      // console.log("selected items", this.selectedItems);
 
       this.createSelectedItemDOM(item.textContent, attributeFilter);
 
@@ -320,8 +310,6 @@ class FilterTemplate {
       this.selectedItems = this.selectedItems.filter(
         (item) => item !== itemText
       );
-
-      // console.log(this.selectedItems, "after removal");
 
       this.updateFiltersAndRecipes.call(this, filterData);
     }
@@ -515,7 +503,6 @@ class FilterMenuIngredients extends FilterTemplate {
     this.attributeFilter = formatAttribute(this.filter);
     this.filterType = "Ingredient";
     this.filterDataInstance = ingredientList;
-    // console.log("ingredientsList:", this.filterDataInstance);
   }
 }
 
@@ -526,7 +513,6 @@ class FilterMenuAppliances extends FilterTemplate {
     this.attributeFilter = formatAttribute(this.filter);
     this.filterType = "Appliance";
     this.filterDataInstance = applianceList;
-    // console.log("appliancesList:", this.filterDataInstance);
   }
 }
 
@@ -537,6 +523,5 @@ class FilterMenuUstensils extends FilterTemplate {
     this.attributeFilter = formatAttribute(this.filter);
     this.filterType = "Ustensil";
     this.filterDataInstance = ustensilList;
-    // console.log("ustensilsList:", this.filterDataInstance);
   }
 }

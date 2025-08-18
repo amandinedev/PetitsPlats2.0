@@ -3,7 +3,7 @@ async function headerTemplate() {
     const header = document.getElementById("header");
     header.classList.add("container-fluid", "d-flex", "p-0");
     header.innerHTML = `
-    <img class="custom-header-img img-fluid position-relative w-100" src="./assets/images/header.jpg" alt="header-img">
+    <img class="custom-header-img img-fluid position-relative w-100" src="./assets/images/header.webp" alt="header-img">
     <div class="custom-header-content container-fluid position-absolute d-flex flex-column top-0 start-0 p-0">
       <img class="custom-logo d-flex align-self-start mt-5 ms-5" src="./assets/images/logo.svg" alt="les petits plats">
         <div class="container d-flex flex-column align-items-center mt-5 mx-auto">
@@ -79,3 +79,8 @@ function setupClearInputButton(inputElement, clearButton) {
 
   
 }
+
+function clearInputField(inputElement, clearButton) {
+  inputElement.value = "";
+  clearButton.classList.add("d-none");
+  }

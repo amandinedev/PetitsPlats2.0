@@ -1,6 +1,5 @@
 async function displayData() {
   const filterData = new FilterData(recipes);
-  // console.log("FilterData:", filterData);
   if (!filterData) {
     throw new Error("FilterData could not be created");
   }
@@ -108,11 +107,10 @@ async function displayData() {
     setupClearInputButton(inputElement, clearButton);
 
     function handleClearAction(recipes, filterData) {
-      inputElement.value = "";
-      clearButton.classList.add("d-none");
+      clearInputField(inputElement, clearButton);
       filters.forEach((filter) => {
-      filter.updateFiltersAndRecipes(filterData);
-     });
+        filter.updateFiltersAndRecipes(filterData);
+      });
     }
 
     clearButton.addEventListener("click", () =>
@@ -127,12 +125,17 @@ async function displayData() {
 
     // for the header input
     inputElement.addEventListener("input", () => {
-      const formattedSearchValue = formatAttribute(inputElement.value);
-      console.log(formattedSearchValue);
+      // secure input value
+      const securedSearchValue = inputElement.value.replace(
+        /[^a-zA-Z0-9]/g,
+        ""
+      );
+      // format search value
+      const formattedSearchValue = formatAttribute(securedSearchValue);
       const filteredRecipesByHeader =
         filterRecipesByHeader(formattedSearchValue);
       filters.forEach((filter) => {
-      filter.updateFiltersAndRecipes(filterData, filteredRecipesByHeader);
+        filter.updateFiltersAndRecipes(filterData, filteredRecipesByHeader);
       });
     });
   }
@@ -141,23 +144,43 @@ async function displayData() {
   filters.forEach((filter) => {
     const attributeFilter = filter.attributeFilter;
     const filterDataInstance = filter.filterDataInstance;
+
+    // Handle filter list events
     filter.handleFilterListEvent(filterData, attributeFilter);
-    // Add event listener to the filter list to remove an option
     filter.handleFilterSelectedListEvent(filterData, attributeFilter);
-    // Check if an inputElement exists and add event listener accordingly to update list
-    // Update recipes based on the current filter state and header search results
-    const inputElement = document.getElementById(`${attributeFilter}-input`);
-    const clearButton = document.querySelector(".custom-clear-input-filter");
+
+    // Setup clear input button
+    const inputElement = document.getElementById(
+      `${attributeFilter}-input`
+    );
+    const clearButton = document.querySelector(
+      `.custom-clear-input-filter-${attributeFilter}`
+    );
     if (inputElement) {
       setupClearInputButton(inputElement, clearButton);
+      //add event listener for clearButton
+      clearButton.addEventListener("click", () => {
+        clearInputField(inputElement, clearButton);
+      });
+      clearButton.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          clearInputField(inputElement, clearButton);
+        }
+      });
+      //add event listener for inputElement
       inputElement.addEventListener("input", () => {
-        const searchValue = formatAttribute(inputElement.value);
-        console.log(searchValue);
+        // secure input value
+        const securedSearchValue = inputElement.value.replace(
+          /[^a-zA-Z0-9]/g,
+          ""
+        );
+        // format search value
+        const formattedSearchValue = formatAttribute(securedSearchValue);
         const updatedList = filterData.updateListUsingValue(
           filterDataInstance,
-          searchValue
+          formattedSearchValue
         );
-        console.log(updatedList);
         filter.generateUpdatedListHTML(
           filterData,
           attributeFilter,
@@ -170,6 +193,7 @@ async function displayData() {
     } else {
       console.log(`No input element found for attribute: ${attributeFilter}`);
     }
+
     // Add event listener to the filter buttons
     const filterButton = document.getElementById(
       `filter-button-${attributeFilter}`
