@@ -74,81 +74,51 @@ function updateRecipeDOM(filteredRecipes) {
   return filteredRecipes;
 }
 
-
 function filterRecipesByHeader(searchValue) {
-    let formattedSearchValue = formatAttribute(searchValue);
-    let msg;
-    let messageContainer = document.querySelector(".searchbar");
+  let formattedSearchValue = formatAttribute(searchValue);
+  let msg;
+  let messageContainer = document.querySelector(".searchbar");
 
-    // Ensure there is only one error message element
-    if (!messageContainer.querySelector('.error-message')) {
-        msg = document.createElement("p");
-        msg.classList.add("error-message", "alert", "justify-content-center");
-        messageContainer.appendChild(msg);
-    } else {
-        msg = messageContainer.querySelector('.error-message');
+  // Ensure there is only one error message element
+  if (!messageContainer.querySelector(".error-message")) {
+    msg = document.createElement("p");
+    msg.classList.add("error-message", "alert", "justify-content-center");
+    messageContainer.appendChild(msg);
+  } else {
+    msg = messageContainer.querySelector(".error-message");
+  }
+
+  if (formattedSearchValue.length < 3) {
+    if (msg) {
+      msg.innerHTML = ""; // Clear any previous messages
     }
+    return recipes; // Return all recipes if search value is less than 3 characters long
+  }
 
-    if (formattedSearchValue.length < 3) {
-        if (msg) {
-            msg.innerHTML = ""; // Clear any previous messages
-        }
-        return recipes; // Return all recipes if search value is less than 3 characters long
+  let filteredRecipes;
+
+  //array method
+
+  console.time("Array Filter");
+  const arrayFilteredRecipes = recipes.filter(
+    (recipe) =>
+      formatAttribute(recipe.name).includes(formattedSearchValue) ||
+      recipe.ingredients.some((ingredient) =>
+        formatAttribute(ingredient.ingredient).includes(formattedSearchValue)
+      ) ||
+      formatAttribute(recipe.description).includes(formattedSearchValue)
+  );
+  console.timeEnd("Array Filter");
+  filteredRecipes = arrayFilteredRecipes;
+
+  // Set error-message
+  if (filteredRecipes.length === 0) {
+    if (msg) {
+      msg.innerText = `Aucune recette ne contient "${formattedSearchValue}", vous pouvez chercher "tarte aux pommes", "poisson", etc.`;
     }
+  }
 
-    let filteredRecipes;
-
-    console.time("Native Loop");
-    filteredRecipes = [];
-    for (let recipe of recipes) {
-      if (
-        formatAttribute(recipe.name).includes(formattedSearchValue) ||
-        recipe.ingredients.some((ingredient) =>
-          formatAttribute(ingredient.ingredient).includes(formattedSearchValue)
-        ) ||
-        formatAttribute(recipe.description).includes(formattedSearchValue)
-      ) {
-        filteredRecipes.push(recipe);
-      }
-    }
-    // filteredRecipes = [];
-    // for (let i = 0; i < recipes.length; i++) {
-    //     const recipe = recipes[i];
-    //     if (
-    //         formatAttribute(recipe.name).includes(formattedSearchValue) ||
-    //         recipe.ingredients.some((ingredient) =>
-    //             formatAttribute(ingredient.ingredient).includes(formattedSearchValue)
-    //         ) ||
-    //         formatAttribute(recipe.description).includes(formattedSearchValue)
-    //     ) {
-    //         filteredRecipes.push(recipe);
-    //     }
-    // }
-    console.timeEnd("Native Loop");
-
-    // Uncomment the following lines to use array method instead and compare performance
-
-    // console.time("Array Filter");
-    // const arrayFilteredRecipes = recipes.filter(
-    //     (recipe) =>
-    //         formatAttribute(recipe.name).includes(formattedSearchValue) ||
-    //         recipe.ingredients.some((ingredient) =>
-    //             formatAttribute(ingredient.ingredient).includes(formattedSearchValue)
-    //         ) ||
-    //         formatAttribute(recipe.description).includes(formattedSearchValue)
-    // );
-    // console.timeEnd("Array Filter");
-    // filteredRecipes = arrayFilteredRecipes;
-
-
-    // Set error-message
-    if (filteredRecipes.length === 0) {
-        if (msg){
-            msg.innerText = `Aucune recette ne contient "${formattedSearchValue}", vous pouvez chercher "tarte aux pommes", "poisson", etc.`;
-        }
-    }
-
-    return filteredRecipes;
+  return filteredRecipes;
 }
 
 function filterRecipesBySelectedItems(recipes, selectedItems) {
