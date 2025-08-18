@@ -111,35 +111,7 @@ function filterRecipesByHeader(searchValue) {
         filteredRecipes.push(recipe);
       }
     }
-    // filteredRecipes = [];
-    // for (let i = 0; i < recipes.length; i++) {
-    //     const recipe = recipes[i];
-    //     if (
-    //         formatAttribute(recipe.name).includes(formattedSearchValue) ||
-    //         recipe.ingredients.some((ingredient) =>
-    //             formatAttribute(ingredient.ingredient).includes(formattedSearchValue)
-    //         ) ||
-    //         formatAttribute(recipe.description).includes(formattedSearchValue)
-    //     ) {
-    //         filteredRecipes.push(recipe);
-    //     }
-    // }
     console.timeEnd("Native Loop");
-
-    // Uncomment the following lines to use array method instead and compare performance
-
-    // console.time("Array Filter");
-    // const arrayFilteredRecipes = recipes.filter(
-    //     (recipe) =>
-    //         formatAttribute(recipe.name).includes(formattedSearchValue) ||
-    //         recipe.ingredients.some((ingredient) =>
-    //             formatAttribute(ingredient.ingredient).includes(formattedSearchValue)
-    //         ) ||
-    //         formatAttribute(recipe.description).includes(formattedSearchValue)
-    // );
-    // console.timeEnd("Array Filter");
-    // filteredRecipes = arrayFilteredRecipes;
-
 
     // Set error-message
     if (filteredRecipes.length === 0) {
