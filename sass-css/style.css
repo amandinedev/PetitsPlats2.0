@@ -130,7 +130,11 @@ main * {
   border-radius: 16px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+
+  .custom-h1 {
+    width: 90%;
+  }
   .total-recipes {
     position: relative !important;
   }
