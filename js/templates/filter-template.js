@@ -156,9 +156,9 @@ class FilterTemplate {
      <div id="filter-button-${
        this.attributeFilter
      }" class="container button d-flex flex-row justify-content-between w-100 py-4 px-4" role="button" aria-haspopup="listbox" aria-expanded="false" tabindex="0">
-        <label for="${this.attributeFilter}-input" class="fw-medium" for="${this.attributeFilter}">${
-      this.filter
-    }</label>
+        <label for="${this.attributeFilter}-input" class="fw-medium" for="${
+      this.attributeFilter
+    }">${this.filter}</label>
         <img src="./assets/icons/icon-arrow-closed.svg" id="filter-closed-${
           this.attributeFilter
         }" class="custom-arrow mt-auto mb-auto" alt=""> 
@@ -174,7 +174,9 @@ class FilterTemplate {
           this.attributeFilter
         }-input" class="custom-input-filter w-100 mt-2 mx-3 ps-2" type="text" aria-label="search input, minimum 3 characters"></input>
         <img src="./assets/icons/icon-reset-input2.svg" 
-        class="custom-clear-input-filter custom-clear-input-filter-${this.attributeFilter} button d-none position-absolute end-0 bottom-0 p-1" alt="clear input" tabindex="0">
+        class="custom-clear-input-filter custom-clear-input-filter-${
+          this.attributeFilter
+        } button d-none position-absolute end-0 bottom-0 p-1" alt="clear input" tabindex="0">
         <img src="./assets/icons/icon-loop-light.svg" 
         class="custom-loop-light position-absolute end-0 bottom-0 p-1 me-4" alt="">
       </searchbar>
@@ -393,7 +395,7 @@ class FilterTemplate {
     // Extract the inner text of the span within the .selected-item
     let itemText = selectedItem.querySelector("span").innerText;
     let target;
-    if (selectedItem.closest(`.section-selected-filters`)) {
+    if (selectedItem.closest(".section-selected-filters")) {
       target = document.querySelector(".section-filters");
     } else {
       target = document.querySelector(".section-selected-filters");
@@ -449,6 +451,10 @@ class FilterTemplate {
         span.classList.add("fw-bold");
       });
 
+      button.addEventListener("hover", () => {
+        span.classList.add("fw-bold");
+      });
+
       button.addEventListener("blur", () => {
         span.classList.remove("fw-bold");
       });
@@ -483,7 +489,11 @@ class FilterTemplate {
         const spanSelected = selectedFilterDOM.querySelector("span");
 
         // Add event listeners for focus and blur
-        buttonSelected.addEventListener("focus" || "hover", () => {
+        buttonSelected.addEventListener("focus", () => {
+          spanSelected.classList.add("fw-bold");
+        });
+
+        buttonSelected.addEventListener("hover", () => {
           spanSelected.classList.add("fw-bold");
         });
 

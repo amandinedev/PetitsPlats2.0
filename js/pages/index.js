@@ -17,7 +17,7 @@ async function displayData() {
   const filters = [
     filterMenuIngredients,
     filterMenuAppliances,
-    filterMenuUstensils,
+    filterMenuUstensils
   ];
 
   //header
@@ -150,9 +150,7 @@ async function displayData() {
     filter.handleFilterSelectedListEvent(filterData, attributeFilter);
 
     // Setup clear input button
-    const inputElement = document.getElementById(
-      `${attributeFilter}-input`
-    );
+    const inputElement = document.getElementById(`${attributeFilter}-input`);
     const clearButton = document.querySelector(
       `.custom-clear-input-filter-${attributeFilter}`
     );

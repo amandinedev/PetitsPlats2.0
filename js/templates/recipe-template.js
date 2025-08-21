@@ -4,14 +4,13 @@ class RecipeTemplate {
     this.recipes = recipes;
     this.image = recipes.image;
     this.time = recipes.time;
-    // this.attributeDate = formatAttribute(this.date);
     this.name = recipes.name;
     this.attributeName = formatAttribute(this.name);
     this.description = recipes.description;
     this.ingredients = recipes.ingredients.map((ingredient) => ({
       name: ingredient.ingredient,
       quantity: ingredient.quantity,
-      unit: ingredient.unit || "",
+      unit: ingredient.unit || ""
     }));
   }
 
@@ -35,16 +34,20 @@ class RecipeTemplate {
         (ingredient) => `
       <li class="d-flex flex-column col-6 m-0 mb-3">
         <p class="ingredient-name m-0">${ingredient.name}</p>
-        <p class="ingredient-quantity m-0">${ingredient.quantity}${ingredient.unit}</p>
+        <p class="ingredient-quantity m-0">
+        ${ingredient.quantity}${ingredient.unit}</p>
       </li>
     `
       )
       .join("");
 
     recipe.innerHTML = `
-     <div id="${this.attributeName}-image" class="custom-container-recipe-img container d-flex m-0 p-0 w-100 position-relative" >
-        <img src="./assets/recipes/${this.image}" class="recipe-img d-flex m-0 p-0" alt="" aria-labelledby="${this.attributeName}-title"> 
-        <time class="custom-time fs-6 me-3 position-absolute top-0 end-0 px-2 me-3 mt-3">${this.time}min</time>
+     <div id="${this.attributeName}-image" 
+     class="custom-container-recipe-img container d-flex m-0 p-0 w-100 position-relative" >
+        <img src="./assets/recipes/${this.image}" 
+        class="recipe-img d-flex m-0 p-0" alt="" aria-labelledby="${this.attributeName}-title"> 
+        <time class="custom-time fs-6 me-3 position-absolute top-0 end-0 px-2 me-3 mt-3">
+        ${this.time}min</time>
       </div>
       <div id="${this.attributeName}-content" class="d-flex flex-column w-100 px-3 mt-4 ">
       <h2 id="${this.attributeName}-title" class="custom-h2 fs-6 d-flex my-3">${this.name}</h2>
@@ -74,53 +77,52 @@ function updateRecipeDOM(filteredRecipes) {
   return filteredRecipes;
 }
 
-
 function filterRecipesByHeader(searchValue) {
-    let formattedSearchValue = formatAttribute(searchValue);
-    let msg;
-    let messageContainer = document.querySelector(".searchbar");
+  let formattedSearchValue = formatAttribute(searchValue);
+  let msg;
+  let messageContainer = document.querySelector(".searchbar");
 
-    // Ensure there is only one error message element
-    if (!messageContainer.querySelector('.error-message')) {
-        msg = document.createElement("p");
-        msg.classList.add("error-message", "alert", "justify-content-center");
-        messageContainer.appendChild(msg);
-    } else {
-        msg = messageContainer.querySelector('.error-message');
+  // Ensure there is only one error message element
+  if (!messageContainer.querySelector(".error-message")) {
+    msg = document.createElement("p");
+    msg.classList.add("error-message", "alert", "justify-content-center");
+    messageContainer.appendChild(msg);
+  } else {
+    msg = messageContainer.querySelector(".error-message");
+  }
+
+  if (formattedSearchValue.length < 3) {
+    if (msg) {
+      msg.innerHTML = ""; // Clear any previous messages
     }
+    return recipes;
+    // Return all recipes if search value is less than 3 characters
+  }
 
-    if (formattedSearchValue.length < 3) {
-        if (msg) {
-            msg.innerHTML = ""; // Clear any previous messages
-        }
-        return recipes; // Return all recipes if search value is less than 3 characters long
+  let filteredRecipes;
+
+  filteredRecipes = [];
+  for (let recipe of recipes) {
+    if (
+      formatAttribute(recipe.name).includes(formattedSearchValue) ||
+      recipe.ingredients.some((ingredient) =>
+        formatAttribute(ingredient.ingredient).includes(formattedSearchValue)
+      ) ||
+      formatAttribute(recipe.description).includes(formattedSearchValue)
+    ) {
+      filteredRecipes.push(recipe);
     }
+  }
 
-    let filteredRecipes;
-
-    console.time("Native Loop");
-    filteredRecipes = [];
-    for (let recipe of recipes) {
-      if (
-        formatAttribute(recipe.name).includes(formattedSearchValue) ||
-        recipe.ingredients.some((ingredient) =>
-          formatAttribute(ingredient.ingredient).includes(formattedSearchValue)
-        ) ||
-        formatAttribute(recipe.description).includes(formattedSearchValue)
-      ) {
-        filteredRecipes.push(recipe);
-      }
+  // Set error-message
+  if (filteredRecipes.length === 0) {
+    if (msg) {
+      msg.innerText = `Aucune recette ne contient "${formattedSearchValue}",
+            vous pouvez chercher "tarte aux pommes", "poisson", etc.`;
     }
-    console.timeEnd("Native Loop");
+  }
 
-    // Set error-message
-    if (filteredRecipes.length === 0) {
-        if (msg){
-            msg.innerText = `Aucune recette ne contient "${formattedSearchValue}", vous pouvez chercher "tarte aux pommes", "poisson", etc.`;
-        }
-    }
-
-    return filteredRecipes;
+  return filteredRecipes;
 }
 
 function filterRecipesBySelectedItems(recipes, selectedItems) {
@@ -132,7 +134,7 @@ function filterRecipesBySelectedItems(recipes, selectedItems) {
         if (key === "ingredients") {
           for (let ingredient of recipe[key]) {
             let ingredientName = formatAttribute(ingredient.ingredient);
-            // Check if the ingredient name is the same or contains the selected item
+            // Check if ingredient name is the same or contains selected item
             if (
               ingredientName === selectedItem ||
               ingredientName.includes(selectedItem)
