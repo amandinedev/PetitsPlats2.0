@@ -106,7 +106,7 @@ async function displayData() {
   if (inputElement) {
     setupClearInputButton(inputElement, clearButton);
 
-    function handleClearAction(recipes, filterData) {
+    function handleClearAction(inputElement, clearButton, recipes, filterData) {
       clearInputField(inputElement, clearButton);
       filters.forEach((filter) => {
         filter.updateFiltersAndRecipes(filterData);
@@ -114,12 +114,12 @@ async function displayData() {
     }
 
     clearButton.addEventListener("click", () =>
-      handleClearAction(recipes, filterData)
+      handleClearAction(inputElement, clearButton, recipes, filterData)
     );
     clearButton.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        handleClearAction(recipes, filterData);
+        handleClearAction(inputElement, clearButton, recipes, filterData);
       }
     });
 
@@ -158,12 +158,14 @@ async function displayData() {
       setupClearInputButton(inputElement, clearButton);
       //add event listener for clearButton
       clearButton.addEventListener("click", () => {
-        clearInputField(inputElement, clearButton);
+        // clearInputField(inputElement, clearButton);
+        handleClearAction(inputElement, clearButton, recipes, filterData)
       });
       clearButton.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
-          clearInputField(inputElement, clearButton);
+          // clearInputField(inputElement, clearButton);
+          handleClearAction(inputElement, clearButton, recipes, filterData)
         }
       });
       //add event listener for inputElement
