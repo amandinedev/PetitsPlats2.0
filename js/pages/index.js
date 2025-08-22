@@ -130,13 +130,12 @@ async function displayData() {
         /[^a-zA-Z0-9]/g,
         ""
       );
-      // format search value
-      const formattedSearchValue = formatAttribute(securedSearchValue);
-      const filteredRecipesByHeader =
-        filterRecipesByHeader(formattedSearchValue);
+  
+      let selectedItems = [];
       filters.forEach((filter) => {
-        filter.updateFiltersAndRecipes(filterData, filteredRecipesByHeader);
+        selectedItems.push(...filter.selectedItems);        
       });
+      filters[0].updateFiltersAndRecipes(filterData,selectedItems);
     });
   }
 

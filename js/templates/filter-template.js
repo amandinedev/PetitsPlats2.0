@@ -317,7 +317,12 @@ class FilterTemplate {
     }
   }
 
-  updateFiltersAndRecipes(filterData) {
+  updateFiltersAndRecipes(filterData,selectedItems=null) {
+
+    if (selectedItems === null) {
+      selectedItems = this.selectedItems;
+    }
+
     // Filter recipes based on the header input
     const headerInputElement = document.querySelector(".custom-input-header");
     const filteredRecipesByHeader = filterRecipesByHeader(
@@ -326,8 +331,8 @@ class FilterTemplate {
 
     // Filter recipes based on selected items (filters)
     const filteredRecipesBySelectedItems = filterRecipesBySelectedItems(
-      recipes,
-      this.selectedItems
+      filterData.recipes,
+      selectedItems
     );
 
     // Get the intersection of both filtered lists
