@@ -108,9 +108,11 @@ async function displayData() {
 
     function handleClearAction(inputElement, clearButton, recipes, filterData) {
       clearInputField(inputElement, clearButton);
+      let selectedItems = [];
       filters.forEach((filter) => {
-        filter.updateFiltersAndRecipes(filterData);
+        selectedItems.push(...filter.selectedItems);        
       });
+      filters[0].updateFiltersAndRecipes(filterData, selectedItems);
     }
 
     clearButton.addEventListener("click", () =>
@@ -135,7 +137,7 @@ async function displayData() {
       filters.forEach((filter) => {
         selectedItems.push(...filter.selectedItems);        
       });
-      filters[0].updateFiltersAndRecipes(filterData,selectedItems);
+      filters[0].updateFiltersAndRecipes(filterData, selectedItems);
     });
   }
 

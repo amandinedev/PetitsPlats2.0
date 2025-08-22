@@ -317,7 +317,7 @@ class FilterTemplate {
     }
   }
 
-  updateFiltersAndRecipes(filterData,selectedItems=null) {
+  updateFiltersAndRecipes(filterData, selectedItems=null) {
 
     if (selectedItems === null) {
       selectedItems = this.selectedItems;
