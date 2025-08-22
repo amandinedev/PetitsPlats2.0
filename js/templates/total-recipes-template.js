@@ -35,6 +35,13 @@
         "me-4"
       );
 
+       // Update text content for a single recipe
+      if (totalRecipes <= 1) {
+        totalRecipesDOM.textContent = `${totalRecipes} recette`;
+      } else {
+        totalRecipesDOM.textContent = `${totalRecipes} recettes`;
+      }
+
       sectionFilters.appendChild(totalRecipesDOM);
     }
   }
